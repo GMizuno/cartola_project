@@ -23,6 +23,6 @@ Liga (Spain) and last one Bundesliga (Germany). After all, I will collect infrom
 
 :black_square_button: Use Type Hints
 
-:black_square_button: Validate parameters
+:black_square_button: Validate parameters in __init__
 
 :black_square_button: Create documentation to league id, team id and ...

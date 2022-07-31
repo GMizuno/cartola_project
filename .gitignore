@@ -122,3 +122,6 @@ raw/
 
 # MacOS
 .DS_Store
+
+# Others
+.Rhistory

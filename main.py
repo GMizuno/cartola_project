@@ -24,3 +24,10 @@ rodadas = teste.get_multiple_match(['837992','838021','838024'])
 
 import pandas as pd
 pd.DataFrame(rodada)
+
+from cartola_refactory import Requester, Fixtures
+from decouple import config
+
+
+teste = Fixtures(config('API_HOST_KEY'), config('API_SECERT_KEY'), {"league": "71", "season": "2022"}, 'fixture')
+teste.fixtures_dataframe()

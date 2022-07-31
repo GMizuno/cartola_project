@@ -9,22 +9,10 @@ Liga (Spain) and last one Bundesliga (Germany). After all, I will collect infrom
 
 # Todo
 
+:black_square_button: Refactoring code, include one class do make the request and other to do the transformations
+
 :black_square_button: Create diagram to tables
 
 :black_square_button: Return raw json
-
-:black_square_button: Improve date and rodada column
-
-:white_check_mark: Team Class
-
-:black_square_button: Create role to substitute NaN values
-
-:white_check_mark: Match Class
-
-:white_check_mark: Time Class
-
-:black_square_button: Fact Class
-
-:black_square_button: Use Type Hints
 
 :black_square_button: Create documentation to league id, team id and ...

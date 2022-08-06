@@ -21,8 +21,6 @@ class Requester():
             self.url = "https://api-football-v1.p.rapidapi.com/v3/fixtures/statistics"  # Trocar url
         elif self.type == 'team' and isinstance(self.type, str):
             self.url = "https://api-football-v1.p.rapidapi.com/v3/teams"
-        elif self.type == 'round' and isinstance(self.type, str):
-            self.url = "https://api-football-v1.p.rapidapi.com/v3/fixtures/statistics"  # Trocar url
         else:
             raise TypeError(f'Type {self.type} does not exist, try other')
 

@@ -16,3 +16,5 @@ Liga (Spain) and last one Bundesliga (Germany). After all, I will collect infrom
 :black_square_button: Return raw json
 
 :black_square_button: Create documentation to league id, team id and ...
+
+:black_square_button: Publish in PyPi

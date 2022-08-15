@@ -1,0 +1,34 @@
+import datetime
+import json
+import os
+
+import pandas as pd
+
+
+class Writer:
+
+    def __init__(self, type):
+        self.type = type
+
+    @property
+    def filename(self):
+        if self.type == 'partida':
+            return f'{self.type}/{datetime.datetime.now().strftime("%Y")}'
+        elif self.type == 'team':
+            return f'{self.type}/{datetime.datetime.now().strftime("%Y")}'
+        elif self.type == 'match':
+            return f'{self.type}/{datetime.datetime.now().strftime("%Y-%m-%d")}'
+        else:
+            raise ValueError(f'Type {self.type} does not exist')
+
+    def write_json(self, data):
+        print(self.filename)
+        os.makedirs(os.path.dirname(self.filename), exist_ok=True)
+        with open(f'{self.filename}.json', 'w') as f:
+            json.dump(data, f)
+
+    def write_json_to_parquet(self, data):
+        os.makedirs(os.path.dirname(self.filename), exist_ok=True)
+
+        print(f'{self.filename}.parquet')
+        pd.DataFrame(data).to_parquet(f'{self.filename}.parquet')

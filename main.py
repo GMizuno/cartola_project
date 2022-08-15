@@ -29,7 +29,7 @@ from cartola import Requester, Fixtures, Teams, Matches
 from decouple import config
 
 
-# teste = Fixtures(config('API_HOST_KEY'), config('API_SECERT_KEY'), {"league": "71", "season": "2022"}, 'fixture')
+teste = Fixtures(config('API_HOST_KEY'), config('API_SECERT_KEY'), {"league": "71", "season": "2022"}, 'fixture')
 # teste = Teams(config('API_HOST_KEY'), config('API_SECERT_KEY'), {"id": ['119', '120']}, 'team')
 teste = Matches(config('API_HOST_KEY'), config('API_SECERT_KEY'), {"fixture": ['837992','838021','838024']}, 'match')
 teste.get_all_match()

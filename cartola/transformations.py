@@ -1,9 +1,7 @@
 import json
 from abc import abstractmethod
 
-import pandas as pd
-
-from writer import Writer
+from cartola.writer import Writer
 from utils.util import convert_time
 
 class Transformer:
@@ -69,7 +67,7 @@ class TeamsTransformer(Transformer):
 
         teams_json = []
 
-        for line in c:
+        for line in self.read_file:
             teams_json.append({
                 'team_id': line .get('parameters').get('id'),
                 'name': line.get('response')[0].get('team').get('name'),

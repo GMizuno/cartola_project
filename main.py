@@ -1,41 +1,32 @@
-import pandas as pd
-from cartola import Fixtures
+from decouple import config  # type: ignore
+from datetime import date
 
-querystring = {"league": "71", "season": "2022"}
-fix = Fixtures("71", "2022")
-rodadas = fix.fixtures()
+from cartola.api import Fixtures, Teams, Matches
+from cartola.transformations import FixturesTransformer, TeamsTransformer, MatchTransformer
+from cartola.writer import Writer
+from utils.util import get_some_match_id, get_all_team_id
 
-from cartola import Teams
+partidas = Fixtures(config('API_HOST_KEY'), config('API_SECERT_KEY'))
+data = partidas.get_data(league_id="71", season_year="2022")
 
-teams = Teams()
-teste = teams.get_team('119')
-teste = teams.get_teams(['119', '120'])
+Writer('matches').write_json(data=data)
 
-from cartola import Time
+match = FixturesTransformer('2022')
+partida_parquet = match.get_data()
 
-teste = Time('1/1/2022', '31/12/2022')
-teste.create_time_tabel()
+times = Teams(config('API_HOST_KEY'), config('API_SECERT_KEY'))
+id = get_all_team_id()
+data = times.get_data(team_id=id)
 
-from cartola import Matches
+Writer('teams').write_json(data=data)
 
-teste = Matches()
-rodada = teste.get_match('837992')
-rodadas = teste.get_multiple_match(['837992','838021','838024'])
+team = TeamsTransformer('2022')
+team_parquet = team.get_data()
 
-import pandas as pd
-pd.DataFrame(rodada)
+partidas = Matches(config('API_HOST_KEY'), config('API_SECERT_KEY'))
+id = get_some_match_id(date(2022, 8, 1), date(2022, 8, 10))
+data = partidas.get_data(match_id=id)
 
-from cartola import Requester, Fixtures, Teams, Matches
-from decouple import config
+Writer('statistics').write_json(data=data)
 
-
-teste = Fixtures(config('API_HOST_KEY'), config('API_SECERT_KEY'), {"league": "71", "season": "2022"}, 'fixture')
-# teste = Teams(config('API_HOST_KEY'), config('API_SECERT_KEY'), {"id": ['119', '120']}, 'team')
-teste = Matches(config('API_HOST_KEY'), config('API_SECERT_KEY'), {"fixture": ['837992','838021','838024']}, 'match')
-teste.get_all_match()
-
-
-fix = Fixtures(config('API_HOST_KEY'), config('API_SECERT_KEY'), {"league": "71", "season": "2022"}, 'fixture').fixtures_dataframe()
-
-fix.to_parquet('transformed/Fixtures.parquet')
-
+MatchTransformer('2022-08-21').get_data()

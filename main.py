@@ -12,8 +12,7 @@ data = partidas.get_data(league_id="71", season_year="2022")
 
 Writer('matches').write_json(data=data)
 
-match = FixturesTransformer()
-partida_parquet = match.save_data()
+FixturesTransformer().save_data()
 
 # Times
 times = Teams(config('API_HOST_KEY'), config('API_SECERT_KEY'))

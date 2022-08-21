@@ -1,8 +1,10 @@
 import json
 from abc import abstractmethod
+import datetime
 
 from cartola.writer import Writer
 from utils.util import convert_time
+
 
 class Transformer:
 
@@ -30,7 +32,7 @@ class Transformer:
     def _get_transformation(self):
         pass
 
-    def get_data(self):
+    def save_data(self):
         data = self._get_transformation()
         writer = Writer(self.type)
         writer.write_json_to_parquet(data)
@@ -38,12 +40,10 @@ class Transformer:
 
 class FixturesTransformer(Transformer):
 
-    def __init__(self, filename):
-        super().__init__(filename, type) # TODO: Change to capture year
-        self.type = 'matches'
+    def __init__(self):
+        super().__init__(filename=datetime.datetime.now().year, type='matches')
 
     def _get_transformation(self):
-
         file_fixture = self.read_file[0].get('response')
 
         fixtures_json = [
@@ -57,19 +57,18 @@ class FixturesTransformer(Transformer):
 
         return fixtures_json
 
+
 class TeamsTransformer(Transformer):
 
-    def __init__(self, filename):
-        super().__init__(filename, type) # TODO: Change to capture year
-        self.type = 'teams'
+    def __init__(self):
+        super().__init__(filename=datetime.datetime.now().year, type='teams')
 
     def _get_transformation(self):
-
         teams_json = []
 
         for line in self.read_file:
             teams_json.append({
-                'team_id': line .get('parameters').get('id'),
+                'team_id': line.get('parameters').get('id'),
                 'name': line.get('response')[0].get('team').get('name'),
                 'code': line.get('response')[0].get('team').get('code'),
                 'country': line.get('response')[0].get('team').get('country'),
@@ -79,11 +78,11 @@ class TeamsTransformer(Transformer):
 
         return teams_json
 
+
 class MatchTransformer(Transformer):
 
-    def __init__(self, filename):
-        super().__init__(filename, type) # TODO: Change to capture date (format => year-month-date)
-        self.type = 'statistics'
+    def __init__(self):
+        super().__init__(filename=datetime.datetime.now().strftime("%Y-%m-%d"), type='statistics')
 
     def _get_transformation(self):
         response = self.read_file

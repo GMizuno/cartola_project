@@ -1,8 +1,10 @@
 import json
 from abc import abstractmethod
 
-from writer import Writer
+import pandas as pd
 
+from writer import Writer
+from utils.util import convert_time
 
 class Transformer:
 
@@ -44,11 +46,11 @@ class FixturesTransformer(Transformer):
 
     def _get_transformation(self):
 
-        file_fixture = self.read_file.get('response')
+        file_fixture = self.read_file[0].get('response')
 
         fixtures_json = [
             {'partida_id': value.get('fixture').get('id'),
-             'date': value.get('fixture').get('date'),
+             'date': convert_time(value.get('fixture').get('date')),
              'rodada': value.get('league').get('round'),
              'league_id': value.get('league').get('id'),
              'id_team_away': value.get('teams').get('away').get('id'),
@@ -61,18 +63,29 @@ class TeamsTransformer(Transformer):
 
     def __init__(self, filename):
         super().__init__(filename, type)
-        self.type = 'partida'
+        self.type = 'team'
 
     def _get_transformation(self):
 
-        team_fixture = self.read_file.get('response')
+        teams_json = []
 
-        return {
-            'team_id': team_fixture.get('parameters').get('id'),
-            'name': team_fixture.get('response')[0].get('team').get('name'),
-            'code': team_fixture.get('response')[0].get('team').get('code'),
-            'country': team_fixture.get('response')[0].get('team').get('country'),
-            'city': team_fixture.get('response')[0].get('venue').get('city'),
-            'logo': team_fixture.get('response')[0].get('team').get('logo')
-        }
+        for line in self.read_file:
+            teams_json.append({
+                'team_id': line .get('parameters').get('id'),
+                'name': line.get('response')[0].get('team').get('name'),
+                'code': line.get('response')[0].get('team').get('code'),
+                'country': line.get('response')[0].get('team').get('country'),
+                'city': line.get('response')[0].get('venue').get('city'),
+                'logo': line.get('response')[0].get('team').get('logo')
+            })
 
+        return teams_json
+
+class MatchTransformer(Transformer):
+
+    def __init__(self, filename):
+        super().__init__(filename, type)
+        self.type = 'match'
+
+    def _get_transformation(self):
+        pass

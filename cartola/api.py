@@ -20,33 +20,37 @@ class Requester():
     def _get_params(self, **kwargs) -> dict:
         pass
 
+    def get_response(self, endpoint, header, param):
+        response = requests.request("GET", endpoint, headers=header, params=param)
+        response.raise_for_status()
+        return response
+
     def get_data(self, **kwargs):
         endpoint = self._get_endpoint()
         params = self._get_params(**kwargs)
-        response = requests.request("GET", endpoint, headers=self.headers, params=params)
-        response.raise_for_status()
-        return response.json()
+        responses_json = [self.get_response(endpoint, self.headers, param).json() for param in params]
+        return responses_json
 
 
 class Fixtures(Requester):
     def _get_endpoint(self) -> str:
         return f'{self.base_endpoint}fixtures'
 
-    def _get_params(self, season_year: str, league_id: str) -> dict:
-        return {"league": league_id, "season": season_year}
+    def _get_params(self, season_year: str, league_id: str) -> List[dict]:
+        return [{"league": league_id, "season": season_year}]
 
 
 class Teams(Requester):
     def _get_endpoint(self) -> str:
         return f'{self.base_endpoint}teams'
 
-    def _get_params(self, team_id: List[str]) -> dict:
-        return {"id": team_id}
+    def _get_params(self, team_id: List[str]) -> List[dict]:
+        return [{"id": id} for id in team_id]
 
 
 class Matches(Requester):
     def _get_endpoint(self) -> str:
         return f'{self.base_endpoint}fixtures/statistics'
 
-    def _get_params(self, match_id: List[str]) -> dict:
-        return {"fixture": match_id}
+    def _get_params(self, match_id: List[str]) -> List[dict]:
+        return [{"fixture": id} for id in match_id]

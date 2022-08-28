@@ -25,9 +25,9 @@ TeamsTransformer().save_data()
 
 ## Estatisticas
 partidas = Matches(config('API_HOST_KEY'), config('API_SECERT_KEY'))
-id = get_some_match_id(date(2022, 8, 1), date(2022, 8, 10))
+id = get_some_match_id(date(2022, 4, 1), date(2022, 8, 10))
 data = partidas.get_data(match_id=id)
 
 Writer('statistics').write_json(data=data)
 
-MatchTransformer().save_data()
+MatchTransformer().save_data(partition_col=['match_id'])

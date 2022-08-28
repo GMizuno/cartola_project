@@ -17,7 +17,7 @@ class Writer:
         elif self.type == 'teams':
             return f'{self.type}/{datetime.datetime.now().strftime("%Y")}'
         elif self.type == 'statistics':
-            return f'{self.type}/{datetime.datetime.now().strftime("%Y-%m-%d")}'
+            return f'{self.type}/{datetime.datetime.now().strftime("%Y")}'
         else:
             raise ValueError(f'Type {self.type} does not exist')
 
@@ -29,3 +29,7 @@ class Writer:
     def write_json_to_parquet(self, data):
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
         pd.DataFrame(data).to_parquet(f'{self.filename}.parquet')
+
+    def write_json_to_parquet_partition(self, data, partition_col):
+        os.makedirs(os.path.dirname(self.filename), exist_ok=True)
+        pd.DataFrame(data).to_parquet(f'{self.filename}', partition_cols=partition_col)

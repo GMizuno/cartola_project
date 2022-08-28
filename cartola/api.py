@@ -1,7 +1,15 @@
+import logging
 from abc import abstractmethod
 from typing import List
+import backoff
+import ratelimit
 
 import requests
+
+my_logger = logging.getLogger('my_logger')
+my_handler = logging.StreamHandler()
+my_logger.addHandler(my_handler)
+my_logger.setLevel(logging.ERROR)
 
 
 class Requester():
@@ -20,7 +28,9 @@ class Requester():
     def _get_params(self, **kwargs) -> dict:
         pass
 
-    def get_response(self, endpoint, header, param):
+    @backoff.on_exception(backoff.expo, ratelimit.exception.RateLimitException, max_tries=10)
+    @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, logger='my_logger', max_tries=5)
+    def get_response(self, endpoint, header, param):  # TODO continues to recive error after 5 tries, check api plan
         response = requests.request("GET", endpoint, headers=header, params=param)
         response.raise_for_status()
         return response

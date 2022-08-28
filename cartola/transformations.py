@@ -1,4 +1,6 @@
+import glob
 import json
+import os
 from abc import abstractmethod
 import datetime
 
@@ -25,17 +27,22 @@ class Transformer:
 
     @property
     def read_file(self):
-        with open(f'{self.filepath}/{self.filename}.json', 'r') as f:
+        list_of_files = glob.glob(f'{self.filepath}/*.json')
+        latest_file = max(list_of_files, key=os.path.getctime)
+        with open(latest_file, 'r') as f:
             return json.load(f)
 
     @abstractmethod
     def _get_transformation(self):
         pass
 
-    def save_data(self):
+    def save_data(self, partition_col = None):
         data = self._get_transformation()
         writer = Writer(self.type)
-        writer.write_json_to_parquet(data)
+        if partition_col is None:
+            writer.write_json_to_parquet(data = data)
+        else:
+            writer.write_json_to_parquet_partition(data = data, partition_col=partition_col)
 
 
 class FixturesTransformer(Transformer):

@@ -30,4 +30,5 @@ data = partidas.get_data(match_id=id)
 
 Writer('statistics').write_json(data=data)
 
+MatchTransformer().save_data()
 MatchTransformer().save_data(partition_col=['match_id'])

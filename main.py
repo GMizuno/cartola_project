@@ -2,6 +2,7 @@ from decouple import config  # type: ignore
 from datetime import date
 
 from cartola.api import Fixtures, Teams, Matches
+from cartola.ingestor import Ingestor
 from cartola.transformations import FixturesTransformer, TeamsTransformer, MatchTransformer
 from cartola.writer import Writer
 from utils.util import get_some_match_id, get_all_team_id
@@ -32,3 +33,6 @@ Writer('statistics').write_json(data=data)
 
 MatchTransformer().save_data()
 MatchTransformer().save_data(partition_col=['match_id'])
+
+ingestor = Ingestor(destination_table='cartola.statistics',project_id='cartola-360814')
+ingestor.send_to_bigquery(file_path='statistics/2022.parquet', if_exists='replace')

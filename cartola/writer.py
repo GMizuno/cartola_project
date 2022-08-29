@@ -1,4 +1,5 @@
 import datetime
+import glob
 import json
 import os
 
@@ -29,6 +30,10 @@ class Writer:
     def write_json_to_parquet(self, data):
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
         pd.DataFrame(data).to_parquet(f'{self.filename}.parquet')
+
+    def concat_all_files(self):
+        pass
+        # TODO: create function to concat all file -> glob.glob(f'{self.filename}/*.parquet', recursive=True)
 
     def write_json_to_parquet_partition(self, data, partition_col):
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)

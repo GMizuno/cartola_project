@@ -30,7 +30,7 @@ class Requester():
 
     @backoff.on_exception(backoff.expo, ratelimit.exception.RateLimitException, logger=my_logger, max_tries=10, factor=10)
     @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, logger=my_logger, max_tries=5, factor=10)
-    def get_response(self, endpoint, header, param):  # TODO continues to recive error after 5 tries, check api plan
+    def get_response(self, endpoint, header, param):  
         response = requests.request("GET", endpoint, headers=header, params=param)
         response.raise_for_status()
         return response

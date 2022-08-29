@@ -5,7 +5,7 @@ from abc import abstractmethod
 import datetime
 
 from cartola.writer import Writer
-from utils.util import convert_time
+from utils.util import convert_time, clean_dict_key
 
 
 class Transformer:
@@ -42,7 +42,7 @@ class Transformer:
         if partition_col is None:
             writer.write_json_to_parquet(data = data)
         else:
-            writer.write_json_to_parquet_partition(data = data, partition_col=partition_col)
+            writer.write_json_to_parquet_partition(data = data, partition_col=partition_col) # TODO: save file for all .parquet in a folder
 
 
 class FixturesTransformer(Transformer):
@@ -57,12 +57,12 @@ class FixturesTransformer(Transformer):
             {'partida_id': value.get('fixture').get('id'),
              'date': convert_time(value.get('fixture').get('date')),
              'rodada': value.get('league').get('round'),
-             'league_id': value.get('league').get('id'),
+             'league id': value.get('league').get('id'),
              'id_team_away': value.get('teams').get('away').get('id'),
              'id_team_home': value.get('teams').get('home').get('id'),
              } for index, value in enumerate(file_fixture)]
 
-        return fixtures_json
+        return [clean_dict_key(i) for i in fixtures_json]
 
 
 class TeamsTransformer(Transformer):
@@ -83,7 +83,7 @@ class TeamsTransformer(Transformer):
                 'logo': line.get('response')[0].get('team').get('logo')
             })
 
-        return teams_json
+        return [clean_dict_key(i) for i in teams_json]
 
 
 class MatchTransformer(Transformer):
@@ -94,7 +94,7 @@ class MatchTransformer(Transformer):
     def _get_transformation(self):
         response = self.read_file
 
-        stats = []
+        stats_json = []
 
         for informations in response:
             for i in informations.get('response'):
@@ -104,6 +104,6 @@ class MatchTransformer(Transformer):
                 team_id = i.get('team')['id']
                 match_id = informations.get('parameters').get('fixture')
                 stats_matches.update({'team_id': team_id, 'match_id': match_id})
-                stats.append(stats_matches)
+                stats_json.append(stats_matches)
 
-        return stats
+        return [clean_dict_key(i) for i in stats_json]

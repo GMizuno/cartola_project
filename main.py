@@ -1,3 +1,4 @@
+import pandas as pd
 from decouple import config  # type: ignore
 from datetime import date
 
@@ -41,4 +42,3 @@ MatchTransformer().save_data()
 WriterGCP(bucket='cartola_raw', parent_folder='statistics', project_id='cartola-360814').upload_from_directory()
 WriterGCP(bucket='cartola_silver', parent_folder='statistics', project_id='cartola-360814').\
     upload_from_directory(extention='parquet')
-

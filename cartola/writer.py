@@ -15,11 +15,11 @@ class Writer:
     @property
     def filename(self):
         if self.type == 'matches':
-            return f'{self.type}/{datetime.datetime.now().strftime("%Y-%d-%m")}'
+            return f'{self.type}/{datetime.datetime.now().strftime("%Y-%d-%m %H-%M-%S")}'
         elif self.type == 'teams':
-            return f'{self.type}/{datetime.datetime.now().strftime("%Y-%d-%m")}'
+            return f'{self.type}/{datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")}'
         elif self.type == 'statistics':
-            return f'{self.type}/{datetime.datetime.now().strftime("%Y-%d-%m")}'
+            return f'{self.type}/{datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")}'
         else:
             raise ValueError(f'Type {self.type} does not exist')
 
@@ -56,7 +56,6 @@ class WriterGCP:
 
     def upload_from_directory(self, extention: str = 'json'):
         rel_paths = glob.glob(self.parent_folder + f'/*.{extention}', recursive=True)
-        print(rel_paths)
         bucket = self.client.bucket(self.bucket)
         for local_file in rel_paths:
             blob = bucket.blob(local_file)

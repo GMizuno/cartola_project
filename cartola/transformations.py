@@ -1,8 +1,8 @@
 import glob
 import json
-import os
 from abc import abstractmethod
 import datetime
+from functools import reduce
 
 from cartola.writer import Writer
 from utils.util import convert_time, clean_dict_key, convert_date
@@ -28,9 +28,12 @@ class Transformer:
     @property
     def read_file(self):
         list_of_files = glob.glob(f'{self.filepath}/*.json')
-        latest_file = max(list_of_files, key=os.path.getctime)
-        with open(latest_file, 'r') as f:
-            return json.load(f)
+        file = []
+        for list_of_file in list_of_files:
+            with open(list_of_file, 'r') as f:
+                file.append(json.load(f))
+
+        return reduce(lambda a, b: a + b, file)
 
     @abstractmethod
     def _get_transformation(self):
@@ -39,7 +42,8 @@ class Transformer:
     def save_data(self):
         data = self._get_transformation()
         writer = Writer(self.type)
-        writer.write_json_to_parquet(data = data)
+        writer.write_json_to_parquet(data=data)
+
 
 class FixturesTransformer(Transformer):
 
@@ -47,18 +51,25 @@ class FixturesTransformer(Transformer):
         super().__init__(filename=datetime.datetime.now().year, type='matches')
 
     def _get_transformation(self):
-        file_fixture = self.read_file[0].get('response')
+        file_fixture = self.read_file
+        print(type(file_fixture))
+        print(len(file_fixture ))
 
-        fixtures_json = [
-            {'partida_id': value.get('fixture').get('id'),
-             'date': convert_time(value.get('fixture').get('date')),
-             'reference_date': convert_date(value.get('fixture').get('date')),
-             'rodada': value.get('league').get('round'),
-             'league_id': value.get('league').get('id'),
-             'id_team_away': value.get('teams').get('away').get('id'),
-             'id_team_home': value.get('teams').get('home').get('id'),
-             } for index, value in enumerate(file_fixture)]
-        return [clean_dict_key(i) for i in fixtures_json]
+        fixture_json = []
+
+        for line in file_fixture:
+            for index, value in enumerate(line.get('response')):
+                result = {'partida_id': value.get('fixture').get('id'),
+                          'date': convert_time(value.get('fixture').get('date')),
+                          'reference_date': convert_date(value.get('fixture').get('date')),
+                          'rodada': value.get('league').get('round'),
+                          'league_id': value.get('league').get('id'),
+                          'id_team_away': value.get('teams').get('away').get('id'),
+                          'id_team_home': value.get('teams').get('home').get('id'),
+                          }
+                fixture_json.append(result)
+
+        return [clean_dict_key(i) for i in fixture_json]
 
 
 class TeamsTransformer(Transformer):
@@ -96,10 +107,10 @@ class MatchTransformer(Transformer):
             for i in informations.get('response'):
                 stats_matches = {}
                 for j in i.get('statistics'):
-                    stats_matches.update({j.get('type'): j.get('value')})
+                    stats_matches.update({j.get('type'): str(j.get('value'))})
                 team_id = i.get('team')['id']
                 match_id = informations.get('parameters').get('fixture')
-                stats_matches.update({'team_id': team_id, 'match_id': match_id})
+                stats_matches.update({'team_id':  str(team_id), 'match_id':  str(match_id)})
                 stats_json.append(stats_matches)
 
         return [clean_dict_key(i) for i in stats_json]

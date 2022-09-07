@@ -19,9 +19,14 @@ def convert_date(time):
 
 def get_all_team_id() -> List[str]:
     list_of_files = glob.glob(f'matches/*.parquet')
-    filepath = max(list_of_files, key=os.path.getctime)
-    return list(set(pd.read_parquet(filepath)['id_team_away'].to_list() + \
-                pd.read_parquet(filepath)['id_team_home'].to_list()))
+    data = pd.concat([pd.read_parquet(list_of_file) for list_of_file in list_of_files])
+    return list(set(data['id_team_away'].to_list() + data['id_team_home'].to_list()))
+
+def get_all_team_id_from_league(league_id) -> List[str]:
+    list_of_files = glob.glob(f'matches/*.parquet')
+    data = pd.concat([pd.read_parquet(list_of_file) for list_of_file in list_of_files])
+    data = data[data['league_id'] == league_id]
+    return list(set(data['id_team_away'].to_list() + data['id_team_home'].to_list()))
 
 
 def get_all_match_id() -> List[str]:
@@ -33,8 +38,7 @@ def get_all_match_id() -> List[str]:
 def get_some_match_id(date_from: datetime.date,
                       date_to: datetime.date) -> List[str]:
     list_of_files = glob.glob(f'matches/*.parquet')
-    filepath = max(list_of_files, key=os.path.getctime)
-    data = pd.read_parquet(filepath)
+    data = pd.concat([pd.read_parquet(list_of_file) for list_of_file in list_of_files])
     data["reference_date"] = pd.to_datetime(data["reference_date"], format='%d/%m/%Y')
     return data[data['reference_date'].dt.date.between(date_from, date_to)]['partida_id'].to_list()
 

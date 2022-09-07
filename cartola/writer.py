@@ -47,14 +47,14 @@ class Writer:
         pd.DataFrame(data).to_parquet(f'{self.filename}', partition_cols=partition_col)
 
 
-class WriterGCP:
+class WriterGCP: # TODO Improve, does not need to pass all parameters, create method (@proprety) that create bucket and parente_folder
     def __init__(self, bucket, parent_folder, project_id):
         self.parent_folder = parent_folder
         self.bucket = bucket
-        self.project_id = project_id,
+        self.project_id = project_id, # TODO: Use decouple
         self.client = storage.Client(project=project_id)
 
-    def upload_from_directory(self, extention: str = 'json'):
+    def upload_from_directory(self, extention: str = 'json'): # TODO: Move to atribute
         rel_paths = glob.glob(self.parent_folder + f'/*.{extention}', recursive=True)
         bucket = self.client.bucket(self.bucket)
         for local_file in rel_paths:

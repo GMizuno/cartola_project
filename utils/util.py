@@ -9,12 +9,12 @@ import datetime
 
 def convert_time(time):
     time = parser.parse(time)
-    return time.strftime("%d/%m/%Y %H:%M")
+    return time.strftime("%d-%m-%Y %H:%M")
 
 
 def convert_date(time):
     time = parser.parse(time)
-    return time.strftime("%d/%m/%Y")
+    return time.strftime("%d-%m-%Y")
 
 
 def get_all_team_id() -> List[str]:

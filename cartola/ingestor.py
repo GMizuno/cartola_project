@@ -1,22 +1,43 @@
 import pandas as pd
-import pandas_gbq as pd_gbq
-from google.cloud import storage
+import boto3
+from pathlib import Path
+import datetime
+import json
 
 
 class Ingestor:
 
-    def __init__(self, destination_table, project_id):
-        self.destination_table = destination_table
-        self.project_id = project_id
-        self.client = storage.Client()
+    def __init__(self, bucket, access_key, secret_access):
+        self.bucket = bucket
+        self.storage_option = {'key': access_key,
+                               'secret': secret_access}
+        self.s3 = boto3.client(
+            's3',
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_access
+        )
 
-    def list_file_bucket(self, bucket: str, folder: str):
-        return [blob.name for blob in self.client.list_blobs(bucket, prefix=f'f{folder}/') if
-                blob.name.endswith('.parquet')]
+    # TODO: Separate Gold from others
+    def get_file_name(self, folder):
+        return f'{folder}_{datetime.datetime.now().strftime("%Y-%d-%m_%H-%M-%S")}'
 
-    def path_pandas_parquet(self, bucket: str, folder: str):
-        return [f'gcs://{bucket}/' + file_path for file_path in self.list_file_bucket(bucket, folder)]
+    # TODO Improve, does not need to pass all parameters, create method (@proprety) that create bucket and parente_folder
+    def upload_fileobj(self, data, folder, extension: str, partition_cols: list = None):
+        filename = self.get_file_name(folder)
+        if extension == 'parquet':
+            if partition_cols is not None:
+                data.to_parquet(f's3://{self.bucket}/{folder}/{filename}',
+                                storage_options=self.storage_option,
+                                partition_cols=partition_cols)
+            else:
+                data.to_parquet(f's3://{self.bucket}/{folder}/{filename}.{extension}',
+                                storage_options=self.storage_option)
+        elif extension == 'json':
+            self.s3.put_object(Body=json.dumps(data), Bucket=self.bucket, Key=f'{folder}/{filename}.{extension}')
 
-    def send_local_file_to_bigquery(self, file_path: str, if_exists: str = 'replace'):
-        data = pd.read_parquet(file_path)
-        pd_gbq.to_gbq(data, self.destination_table, self.project_id, if_exists=if_exists)
+    # TODO Improve, does not need to pass all parameters, create method (@proprety) that create bucket and parente_folder
+    def upload_filedisk(self, folder, path: str, **kwargs):
+        path = Path(path)
+        data = pd.read_parquet(path, **kwargs)
+
+        self.upload_fileobj(data, folder, path.suffix)

@@ -4,8 +4,6 @@ import json
 import os
 
 import pandas as pd
-from google.cloud import storage
-
 
 class Writer:
 
@@ -24,7 +22,7 @@ class Writer:
             raise ValueError(f'Type {self.type} does not exist')
 
     def write_json(self, data):
-        os.makedirs(os.path.dirname(self.filename), exist_ok=True)
+        # os.makedirs(os.path.dirname(self.filename), exist_ok=True)
         with open(f'{self.filename}.json', 'w') as f:
             json.dump(data, f)
 
@@ -46,17 +44,3 @@ class Writer:
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
         pd.DataFrame(data).to_parquet(f'{self.filename}', partition_cols=partition_col)
 
-
-class WriterGCP: # TODO Improve, does not need to pass all parameters, create method (@proprety) that create bucket and parente_folder
-    def __init__(self, bucket, parent_folder, project_id):
-        self.parent_folder = parent_folder
-        self.bucket = bucket
-        self.project_id = project_id, # TODO: Use decouple
-        self.client = storage.Client(project=project_id)
-
-    def upload_from_directory(self, extention: str = 'json'): # TODO: Move to atribute
-        rel_paths = glob.glob(self.parent_folder + f'/*.{extention}', recursive=True)
-        bucket = self.client.bucket(self.bucket)
-        for local_file in rel_paths:
-            blob = bucket.blob(local_file)
-            blob.upload_from_filename(local_file)

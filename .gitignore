@@ -118,6 +118,7 @@ dmypy.json
 
 # files
 *.parquet
+*.json
 matches/
 statistics/
 teams/

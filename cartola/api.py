@@ -38,6 +38,7 @@ class Requester():
     def get_data(self, **kwargs):
         endpoint = self._get_endpoint()
         params = self._get_params(**kwargs)
+        print(params)
         responses_json = [self.get_response(endpoint, self.headers, param).json() for param in params]
         return responses_json
 

@@ -33,8 +33,34 @@ class Athena:
         else:
             data = self.execute_query("SELECT * FROM cartola_siver.matches")
 
-        if 'reference_date' and 'partida_id' not in data.columns:
+        if 'reference_date' and 'match_id' not in data.columns:
             raise KeyError('reference_date or partida_id are not a column')
 
         data["reference_date"] = pd.to_datetime(data["reference_date"], format='%d-%m-%Y')
-        return data[data['reference_date'].dt.date.between(date_from, date_to)]['partida_id'].to_list()
+        data_filter = data[data['reference_date'].dt.date.between(date_from, date_to)]
+        ids = data_filter['match_id'].to_list()
+        print(data_filter)
+
+        return ids
+
+    def create_obt(self):
+        data = self.execute_query("""\
+                select statistics.*,
+                       matches.date,
+                       matches.reference_date,
+                       matches.round,
+                       matches.id_team_away,
+                       matches.id_team_home,
+                       matches.league_id,
+                       teams.name,
+                       teams.code,
+                       teams.country,
+                       teams.logo,
+                       teams.city,
+                       teams.state
+                from cartola_siver.statistics
+                join cartola_siver.matches on statistics.match_id = matches.match_id
+                join cartola_siver.teams on statistics.team_id = cast(teams.team_id as int)
+        """)
+
+        return data

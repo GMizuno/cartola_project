@@ -39,6 +39,7 @@ def export_statistics_bronze(api_host_key: str, api_secert_key: str, date_from: 
     athena = Athena(access_key, secret_access)
     statistics = Matches(api_host_key, api_secert_key)
     ids = athena.filter_by_date(date_from, date_to)
+    print(ids)
     data = statistics.get_data(match_id=ids)
 
     S3Writer('bootcamp-bronze', access_key, secret_access).upload_fileobj(data, 'statistics', 'json')

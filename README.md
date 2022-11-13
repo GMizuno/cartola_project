@@ -11,12 +11,13 @@ Liga (Spain) and last one Bundesliga (Germany). After all, I will collect infrom
 
 :black_square_button: Add logs
 
-:black_square_button: Refactoring code, include one class do make the request and other to do the transformations
+~~:black_square_button: Refactoring code, include one class do make the request and other to do the transformations~~
+
+:black_square_button: Refactoring Athena module, separate helpers methods form obt method and create contect method
 
 :black_square_button: Create diagram to tables
 
-:black_square_button: Return raw json
+~~:black_square_button: Return raw json~~
 
 :black_square_button: Create documentation to league id, team id and ...
 
-:black_square_button: Publish in PyPi

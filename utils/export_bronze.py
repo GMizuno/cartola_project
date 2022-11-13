@@ -12,8 +12,11 @@ def export_matches_bronze(api_host_key: str, api_secert_key: str, league_id: str
     data = partidas.get_data(league_id=league_id, season_year=season_year)
 
     S3Writer('bootcamp-bronze', access_key, secret_access).upload_fileobj(data, 'matches', 'json', id=league_id)
+
     data_partidas = FixturesTransformer(access_key=access_key,
                                         secret_access=secret_access)._get_transformation()
+    data_partidas = data_partidas[data_partidas['league_id'] == int(league_id)]
+    print(data_partidas.head())
 
     S3Writer('bootcamp-silver', access_key, secret_access). \
         upload_fileobj(data_partidas, 'matches', 'parquet', id=league_id)

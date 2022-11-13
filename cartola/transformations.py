@@ -59,15 +59,6 @@ class FixturesTransformer(Transformer):
 
         return data.drop_duplicates()
 
-    def _get_transformation_gold(self) -> pd.DataFrame:
-        pass
-        # data = self.read.read_file(suffix='parquet')
-        #
-        # data.rename(columns={'partida_id': 'match_id', 'rodada': 'round'}, inplace=True)
-        # data.replace(to_replace=r'Regular Season - ', value='', regex=True, inplace=True)
-        #
-        # return data.drop_duplicates()
-
 
 class TeamsTransformer(Transformer):
 
@@ -101,18 +92,6 @@ class TeamsTransformer(Transformer):
         data = pd.concat([data, data_location], axis=1)
 
         return data.drop_duplicates()
-
-    def _get_transformation_gold(self) -> pd.DataFrame:
-        pass
-        # data = self.read.read_file(suffix='parquet')
-        #
-        # data_location = data['city'].str.split(',', 1, expand=True)
-        # data_location.rename(columns={0: 'city', 1: 'state'}, inplace=True)
-        # data_location['state'] = data_location['state'].fillna(data_location['city'])
-        # data = data[['team_id', 'name', 'code', 'country', 'logo']]
-        # data = pd.concat([data, data_location], axis=1)
-        #
-        # return data.drop_duplicates()
 
 
 class MatchTransformer(Transformer):
@@ -148,15 +127,3 @@ class MatchTransformer(Transformer):
         data['Ball_Possession'] = data['Ball_Possession'].div(100)
 
         return data.drop_duplicates()
-
-    def _get_transformation_gold(self) -> pd.DataFrame:
-        pass
-        # data = self.read.read_file(suffix='parquet')
-        #
-        # data.replace('None', 0, inplace=True)
-        # data.replace(to_replace=r'%', value='', regex=True, inplace=True)
-        # data = data.astype(int)
-        # data['Passes_percentage'] = data['Passes_percentage'].div(100)
-        # data['Ball_Possession'] = data['Ball_Possession'].div(100)
-        #
-        # return data.drop_duplicates()

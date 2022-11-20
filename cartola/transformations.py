@@ -1,13 +1,9 @@
-import json
 from abc import abstractmethod
-import datetime
-import tempfile
 import pandas as pd
-from io import BytesIO
 
-from cartola.connector import AwsConnection
 from cartola.reader import Reader
-from utils.util import convert_time, clean_dict_key, convert_date
+from utils.util import convert_time, clean_dict_key
+from utils.util import convert_date
 
 
 class Transformer:

@@ -4,7 +4,7 @@ from pyathena.pandas.cursor import PandasCursor
 import pandas as pd
 
 
-class Athena:
+class AthenaConn:
 
     def __init__(self, access_key: str, secret_access: str, bucket: str = "s3://staging-area-cartola/",
                  region_name: str = "us-east-1") -> None:
@@ -13,15 +13,21 @@ class Athena:
         self.secret_access = secret_access
         self.access_key = access_key
 
-    def __connect(self) -> BaseCursor:
+    def connect(self) -> BaseCursor:
         return connect(s3_staging_dir=self.bucket,
                        aws_access_key_id=self.access_key,
                        aws_secret_access_key=self.secret_access,
                        region_name=self.region_name,
                        cursor_class=PandasCursor).cursor()
 
+
+class Athena:
+
+    def __init__(self, conn: AthenaConn):
+        self.conn = conn.connect()
+
     def execute_query(self, query: str) -> pd.DataFrame:
-        return self.__connect().execute(query).as_pandas()
+        return self.conn.execute(query).as_pandas()
 
     def get_all_ids(self) -> list:
         data = self.execute_query("SELECT distinct id_team_home FROM cartola_siver.matches")

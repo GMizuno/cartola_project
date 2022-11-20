@@ -1,6 +1,4 @@
-from datetime import date
-
-from cartola.athena import Athena
+from database.athena import Athena
 from cartola.writer import S3Writer
 
 def export_obt(access_key: str, secret_access: str) -> None:

@@ -1,7 +1,7 @@
 from datetime import date
 
 from cartola.api import Fixtures, Teams, Matches
-from cartola.athena import Athena
+from database.athena import AthenaConn, Athena
 from cartola.writer import S3Writer
 from cartola.transformations import FixturesTransformer, TeamsTransformer, MatchTransformer
 
@@ -23,9 +23,9 @@ def export_matches_bronze(api_host_key: str, api_secert_key: str, league_id: str
 
 def export_team_bronze(api_host_key: str, api_secert_key: str, access_key: str,
                        secret_access: str) -> None:
-    athena = Athena(access_key, secret_access)
+    athena_conn = AthenaConn(access_key, secret_access)
     times = Teams(api_host_key, api_secert_key)
-    ids = athena.get_all_ids()
+    ids = Athena(athena_conn).get_all_ids()
     data = times.get_data(team_id=ids)
 
     S3Writer('bootcamp-bronze', access_key, secret_access).upload_fileobj(data, 'teams', 'json')
@@ -38,9 +38,9 @@ def export_team_bronze(api_host_key: str, api_secert_key: str, access_key: str,
 
 def export_statistics_bronze(api_host_key: str, api_secert_key: str, date_from: date, date_to: date, access_key: str,
                              secret_access: str) -> None:
-    athena = Athena(access_key, secret_access)
+    athena_conn = AthenaConn(access_key, secret_access)
     statistics = Matches(api_host_key, api_secert_key)
-    ids = athena.filter_by_date(date_from, date_to)
+    ids = Athena(athena_conn).filter_by_date(date_from, date_to)
     data = statistics.get_data(match_id=ids)
 
     S3Writer('bootcamp-bronze', access_key, secret_access).upload_fileobj(data, 'statistics', 'json')

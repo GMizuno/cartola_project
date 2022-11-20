@@ -1,3 +1,3 @@
 # API
 
-Sectition dedicate to explian Requester Class
+Section dedicate to explain Requester Class

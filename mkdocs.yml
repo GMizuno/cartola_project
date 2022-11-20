@@ -4,6 +4,7 @@ theme:
 
 nav:
     - Home: index.md
+    - Requester: api/api.md
 
 markdown_extensions:
   - pymdownx.tasklist  # Lista de tarefas

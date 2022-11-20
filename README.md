@@ -1,3 +1,5 @@
+[![pages-build-deployment](https://github.com/GMizuno/cartola_project/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/GMizuno/cartola_project/actions/workflows/pages/pages-build-deployment)
+
 # cartola_project
 
 Firts of all this project is use to improve my skills in Data Engineering and Python. This porject try to extract data

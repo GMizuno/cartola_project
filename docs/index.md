@@ -1,17 +1,8 @@
-# Welcome to MkDocs
+# Cartola Project
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+First of all this project is use to improve my skills in Data Engineering and Python. This porject try to extract data
+from API and create Data Lakehouse.
 
-## Commands
-
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+In the beginning I will collect information about first division of brazilian national league at the year of 2022.
+In the future I will expand this lakehouse to other tournament, the first one will Premier League (UK), the second La
+Liga (Spain) and last one Bundesliga (Germany). After all, I will collect information from previous years.

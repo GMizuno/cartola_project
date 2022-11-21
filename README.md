@@ -2,22 +2,24 @@
 
 # cartola_project
 
-Firts of all this project is use to improve my skills in Data Engineering and Python. This porject try to extract data
+First of all this project is used to improve my skills in Data Engineering and Python. This project try to extract data
 from API and create Data Lakehouse.
 
-In the beging I will collect information about first division of brazilian national league at the year of 2022.
+In the beginning I will collect information about first division of brazilian national league at the year of 2022.
 In the future I will expand this lakehouse to other tournament, the first one will Premier League (UK), the second La
-Liga (Spain) and last one Bundesliga (Germany). After all, I will collect infromation from previous years.
+Liga (Spain) and last one Bundesliga (Germany). After all, I will collect information from previous years.
 
 # Todo
+             
+:black_square_button: Particionate parquet in silver
+
+:black_square_button: Rename files in bronze 
+
+:black_square_button: Create bucket class, using Dataclasses to improve get_file_name method in S3Writer 
 
 :black_square_button: Add logs
 
 ~~:black_square_button: Refactoring code, include one class do make the request and other to do the transformations~~
-
-:black_square_button: Refactoring Athena module, separate helpers methods form obt method and create contect method
-
-:black_square_button: Create diagram to tables
 
 ~~:black_square_button: Return raw json~~
 

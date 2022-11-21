@@ -1,8 +1,8 @@
 from datetime import date
 
-from utils.export_bronze import export_statistics_bronze
-from utils.export_silver import export_obt
-from utils.util import config_statistics_dict, config_obt_dict
+from utils.export import export_statistics_bronze, export_statistics_silver
+from utils.util import config_statistics_dict
+from decouple import config
 
 params = config_statistics_dict(
         date(2022, 10, 1),
@@ -10,6 +10,4 @@ params = config_statistics_dict(
 )
 export_statistics_bronze(**params)
 
-params = config_obt_dict()
-
-export_obt(**params)
+export_statistics_silver(**{'access_key':config('AcessKey'), 'secret_access':config('SecretKey')})

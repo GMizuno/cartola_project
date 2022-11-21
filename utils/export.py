@@ -13,12 +13,13 @@ def export_matches_bronze(api_host_key: str, api_secert_key: str, league_id: str
 
     S3Writer('bootcamp-bronze', access_key, secret_access).upload_fileobj(data, 'matches', 'json', id=league_id)
 
+
+def export_matches_silver(access_key: str, secret_access: str) -> None:  # TODO: Is necessary league_id?
     data_partidas = FixturesTransformer(access_key=access_key,
                                         secret_access=secret_access)._get_transformation()
-    data_partidas = data_partidas[data_partidas['league_id'] == int(league_id)]
 
     S3Writer('bootcamp-silver', access_key, secret_access). \
-        upload_fileobj(data_partidas, 'matches', 'parquet', id=league_id)
+        upload_fileobj(data_partidas, 'matches', 'parquet')
 
 
 def export_team_bronze(api_host_key: str, api_secert_key: str, access_key: str,
@@ -29,8 +30,11 @@ def export_team_bronze(api_host_key: str, api_secert_key: str, access_key: str,
     data = times.get_data(team_id=ids)
 
     S3Writer('bootcamp-bronze', access_key, secret_access).upload_fileobj(data, 'teams', 'json')
+
+
+def export_team_silver(access_key: str, secret_access: str) -> None:
     data_partidas = TeamsTransformer(access_key=access_key,
-                                        secret_access=secret_access)._get_transformation()
+                                     secret_access=secret_access)._get_transformation()
 
     S3Writer('bootcamp-silver', access_key, secret_access). \
         upload_fileobj(data_partidas, 'teams', 'parquet')
@@ -44,8 +48,11 @@ def export_statistics_bronze(api_host_key: str, api_secert_key: str, date_from: 
     data = statistics.get_data(match_id=ids)
 
     S3Writer('bootcamp-bronze', access_key, secret_access).upload_fileobj(data, 'statistics', 'json')
+
+
+def export_statistics_silver(access_key: str, secret_access: str) -> None:
     data_partidas = MatchTransformer(access_key=access_key,
-                                        secret_access=secret_access)._get_transformation()
+                                     secret_access=secret_access)._get_transformation()
 
     S3Writer('bootcamp-silver', access_key, secret_access). \
         upload_fileobj(data_partidas, 'statistics', 'parquet')

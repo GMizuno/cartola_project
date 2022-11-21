@@ -46,12 +46,15 @@ class FixturesTransformer(Transformer):
                           'league_id': value.get('league').get('id'),
                           'id_team_away': value.get('teams').get('away').get('id'),
                           'id_team_home': value.get('teams').get('home').get('id'),
+                          'goals_home': value.get('goals').get('home'),
+                          'goals_away': value.get('goals').get('away')
                           }
                 fixture_json.append(result)
         data = pd.DataFrame([clean_dict_key(i) for i in fixture_json])
 
         data.rename(columns={'partida_id': 'match_id', 'rodada': 'round'}, inplace=True)
         data.replace(to_replace=r'Regular Season - ', value='', regex=True, inplace=True)
+        data.replace(to_replace=r'Group Stage - ', value='', regex=True, inplace=True)
 
         return data.drop_duplicates()
 
@@ -71,7 +74,7 @@ class TeamsTransformer(Transformer):
 
         for line in self.read.read_file(suffix='json'):
             teams_json.append({
-                'team_id': line.get('parameters').get('id'),
+                'team_id': int(line.get('parameters').get('id')),
                 'name': line.get('response')[0].get('team').get('name'),
                 'code': line.get('response')[0].get('team').get('code'),
                 'country': line.get('response')[0].get('team').get('country'),

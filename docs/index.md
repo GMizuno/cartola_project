@@ -1,6 +1,6 @@
 # Cartola Project
 
-First of all this project is use to improve my skills in Data Engineering and Python. This porject try to extract data
+First of all this project is used to improve my skills in Data Engineering and Python. This project try to extract data
 from API and create Data Lakehouse.
 
 In the beginning I will collect information about first division of brazilian national league at the year of 2022.

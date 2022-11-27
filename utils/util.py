@@ -3,7 +3,6 @@ import glob
 import os
 from decouple import config  # type: ignore
 
-
 import pandas as pd  # type: ignore
 from dateutil import parser  # type: ignore
 import datetime
@@ -110,3 +109,21 @@ def config_obt_dict(access_key: str = 'AcessKey',
         'access_key'   :config(access_key),
         'secret_access':config(secret_access)
     }
+
+
+def win_home(data):
+    if data.goals_home == data.goals_away:
+        return 'home_draw'
+    elif data.goals_home > data.goals_away:
+        return 'home_win'
+    else:
+        return 'home_lose'
+
+
+def win(data):
+    if data.win_home == 'home_draw':
+        return 'draw'
+    elif data.win_home == 'home_win' and data.home == True:
+        return 'win'
+    else:
+        return 'lose'

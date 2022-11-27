@@ -5,4 +5,4 @@ from decouple import config
 params = config_team_dict()
 export_team_bronze(**params)
 
-export_team_silver(**{'access_key':config('AcessKey'), 'secret_access':config('SecretKey')})
+export_team_silver(**{'access_key': config('AcessKey'), 'secret_access': config('SecretKey')})

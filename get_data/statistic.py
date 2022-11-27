@@ -6,8 +6,8 @@ from decouple import config
 
 params = config_statistics_dict(
         date(2022, 10, 1),
-        date(2022, 11, 12)
+        date(2022, 10, 12)
 )
 export_statistics_bronze(**params)
 
-export_statistics_silver(**{'access_key':config('AcessKey'), 'secret_access':config('SecretKey')})
+export_statistics_silver(**{'access_key': config('AcessKey'), 'secret_access': config('SecretKey')})

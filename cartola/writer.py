@@ -1,29 +1,56 @@
 import datetime
 import json
+from abc import ABC, abstractmethod
 
+from models.storage import Storage
+from models.bucket import Bucket
+from models.file import File
 from cartola.connector import AwsConnection
 
 
-class S3Writer:
+class S3Writer(ABC):
 
-    def __init__(self, bucket, access_key, secret_access):
+    def __init__(self, bucket: Bucket, access_key, secret_access):
         self.bucket = bucket
         self.connection = AwsConnection(access_key, secret_access)
 
-    def get_file_name(self, folder, id):
-        if 'gold' in self.bucket:
-            return f'{folder}'
-        else:
-            if id is None:
-                return f"""{folder}_{datetime.datetime.now().strftime('%Y-%d-%m')}"""
-            return f"""{folder}_{id}_{datetime.datetime.now().strftime('%Y-%d-%m')}"""
+    def get_file_name(self, folder: Storage, **kwargs):
+        folder_value = folder.value
+        bucket_value = self.bucket.value
+        league_id = kwargs.get('id')
 
-    def upload_fileobj(self, data, folder: str, extension: str, **kwargs):
-        id = kwargs.get('id')
-        filename = self.get_file_name(folder, id)
-        if extension == 'parquet':
-            data.to_parquet(f's3://{self.bucket}/{folder}/{filename}.{extension}',
-                            storage_options=self.connection.storage_option)
-        elif extension == 'json':
-            self.connection.client.put_object(Body=json.dumps(data), Bucket=self.bucket,
-                                              Key=f'{folder}/{filename}.{extension}')
+        if league_id is not None:
+            return f"""{folder_value}_{league_id}_{datetime.datetime.now().strftime('%Y-%d-%m, %H:%M:%S')}"""
+        return f"""{folder_value}_{datetime.datetime.now().strftime('%Y-%d-%m, %H:%M:%S')}"""
+
+
+@abstractmethod
+def upload_fileobj(self, data, folder: Storage, extension: File, **kwargs):
+    pass
+
+
+class S3WriterParquet(S3Writer):
+
+    def __init__(self, bucket: Bucket, access_key, secret_access):
+        super().__init__(bucket, access_key, secret_access)
+
+    def upload_fileobj(self, data, folder: Storage, **kwargs):
+        filename = self.get_file_name(folder, **kwargs)
+        print(f's3://{self.bucket.value}/{folder.value}/{filename}.{File.PARQUET.value}', )
+        data.to_parquet(
+                f's3://{self.bucket.value}/{folder.value}/{filename}.{File.PARQUET.value}',
+                storage_options=self.connection.storage_option
+        )
+
+
+class S3WriterJson(S3Writer):
+
+    def __init__(self, bucket: Bucket, access_key, secret_access):
+        super().__init__(bucket, access_key, secret_access)
+
+    def upload_fileobj(self, data, folder: Storage, **kwargs):
+        filename = self.get_file_name(folder, **kwargs)
+        self.connection.client.put_object(
+                Body=json.dumps(data), Bucket=self.bucket.value,
+                Key=f'{folder.value}/{filename}.{File.JSON.value}'
+        )

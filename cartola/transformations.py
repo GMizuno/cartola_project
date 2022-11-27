@@ -1,31 +1,29 @@
 from abc import abstractmethod
 import pandas as pd
 
-from cartola.reader import Reader
+from models.bucket import Bucket
+from models.storage import Storage
+from cartola.reader import ReaderJson
 from utils.util import convert_time, clean_dict_key
 from utils.util import convert_date
 
 
 class Transformer:
 
-    def __init__(self, bucket: str, s3_folder: str, access_key: str, secret_access: str) -> None:
+    def __init__(self, bucket: Bucket, s3_folder: Storage, access_key: str, secret_access: str) -> None:
         self.bucket = bucket
         self.s3_folder = s3_folder
-        self.read = Reader(bucket, s3_folder, access_key, secret_access)
+        self.read = ReaderJson(bucket, s3_folder, access_key, secret_access)
 
     @abstractmethod
     def _get_transformation(self):
         pass
 
-    @abstractmethod
-    def _get_transformation_gold(self):
-        pass
-
 
 class FixturesTransformer(Transformer):
 
-    def __init__(self, access_key: str, secret_access: str, bucket: str = 'bootcamp-bronze',
-                 s3_folder: str = 'matches') -> None:
+    def __init__(self, access_key: str, secret_access: str, bucket: Bucket = Bucket.BRONZE,
+                 s3_folder: Storage = Storage.MATCHES) -> None:
         super().__init__(bucket, s3_folder, access_key, secret_access)
         self.acess_key = access_key
         self.secret_key = secret_access
@@ -35,7 +33,7 @@ class FixturesTransformer(Transformer):
     def _get_transformation(self) -> pd.DataFrame:
 
         fixture_json = []
-        file = self.read.read_file(suffix='json')
+        file = self.read.read_file()
 
         for line in file:
             for index, value in enumerate(line.get('response')):
@@ -51,6 +49,8 @@ class FixturesTransformer(Transformer):
                           }
                 fixture_json.append(result)
         data = pd.DataFrame([clean_dict_key(i) for i in fixture_json])
+        print(data.head())
+        print(data.tail())
 
         data.rename(columns={'partida_id': 'match_id', 'rodada': 'round'}, inplace=True)
         data.replace(to_replace=r'Regular Season - ', value='', regex=True, inplace=True)
@@ -61,8 +61,8 @@ class FixturesTransformer(Transformer):
 
 class TeamsTransformer(Transformer):
 
-    def __init__(self, access_key: str, secret_access: str, bucket: str = 'bootcamp-bronze',
-                 s3_folder: str = 'teams') -> None:
+    def __init__(self, access_key: str, secret_access: str, bucket: Bucket = Bucket.BRONZE,
+                 s3_folder: Storage = Storage.TEAMS) -> None:
         super().__init__(bucket, s3_folder, access_key, secret_access)
         self.acess_key = access_key
         self.secret_key = secret_access
@@ -72,15 +72,16 @@ class TeamsTransformer(Transformer):
     def _get_transformation(self) -> pd.DataFrame:
         teams_json = []
 
-        for line in self.read.read_file(suffix='json'):
+        for line in self.read.read_file():
             teams_json.append({
-                'team_id': int(line.get('parameters').get('id')),
-                'name': line.get('response')[0].get('team').get('name'),
-                'code': line.get('response')[0].get('team').get('code'),
-                'country': line.get('response')[0].get('team').get('country'),
-                'city': line.get('response')[0].get('venue').get('city'),
-                'logo': line.get('response')[0].get('team').get('logo')
-            })
+                    'team_id': int(line.get('parameters').get('id')),
+                    'name': line.get('response')[0].get('team').get('name'),
+                    'code': line.get('response')[0].get('team').get('code'),
+                    'country': line.get('response')[0].get('team').get('country'),
+                    'city': line.get('response')[0].get('venue').get('city'),
+                    'logo': line.get('response')[0].get('team').get('logo')
+            }
+            )
 
         data = pd.DataFrame([clean_dict_key(i) for i in teams_json])
 
@@ -95,8 +96,8 @@ class TeamsTransformer(Transformer):
 
 class MatchTransformer(Transformer):
 
-    def __init__(self, access_key: str, secret_access: str, bucket: str = 'bootcamp-bronze',
-                 s3_folder: str = 'statistics') -> None:
+    def __init__(self, access_key: str, secret_access: str, bucket: Bucket = Bucket.BRONZE,
+                 s3_folder: Storage = Storage.STATISTICS) -> None:
         super().__init__(bucket, s3_folder, access_key, secret_access)
         self.acess_key = access_key
         self.secret_key = secret_access
@@ -107,7 +108,7 @@ class MatchTransformer(Transformer):
 
         stats_json = []
 
-        for informations in self.read.read_file(suffix='json'):
+        for informations in self.read.read_file():
             for i in informations.get('response'):
                 stats_matches = {}
                 for j in i.get('statistics'):

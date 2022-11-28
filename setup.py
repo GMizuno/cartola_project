@@ -22,10 +22,10 @@ def read_requirements(path):
 
 
 setup(
-        name="cartola_project",
+        name="CartolaProject",
         version="0.1.0",
         description="Extract data football from api",
-        url="GMizuno_pamps",
+        url="CartolaData",
         python_requires=">=3.10",
         long_description_content_type="text/markdown",
         author="Gabriel Mizuno",

@@ -1,7 +1,7 @@
 from datetime import date
 
-from utils.export import export_statistics_bronze, export_statistics_silver
-from utils.util import config_statistics_dict
+from get_data.export import export_statistics_bronze, export_statistics_silver
+from cartola import config_statistics_dict
 from decouple import config
 
 params = config_statistics_dict(
@@ -11,3 +11,4 @@ params = config_statistics_dict(
 export_statistics_bronze(**params)
 
 export_statistics_silver(**{'access_key': config('AcessKey'), 'secret_access': config('SecretKey')})
+                       

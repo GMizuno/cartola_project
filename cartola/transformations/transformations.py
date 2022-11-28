@@ -1,11 +1,8 @@
 from abc import abstractmethod
 import pandas as pd
-
-from models.bucket import Bucket
-from models.storage import Storage
 from cartola.reader import ReaderJson
-from utils.util import convert_time, clean_dict_key
-from utils.util import convert_date
+from .util import convert_time, clean_dict_key, convert_date
+from cartola.models import Bucket, Storage
 
 
 class Transformer:
@@ -49,8 +46,6 @@ class FixturesTransformer(Transformer):
                           }
                 fixture_json.append(result)
         data = pd.DataFrame([clean_dict_key(i) for i in fixture_json])
-        print(data.head())
-        print(data.tail())
 
         data.rename(columns={'partida_id': 'match_id', 'rodada': 'round'}, inplace=True)
         data.replace(to_replace=r'Regular Season - ', value='', regex=True, inplace=True)

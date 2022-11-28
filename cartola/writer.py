@@ -2,9 +2,7 @@ import datetime
 import json
 from abc import ABC, abstractmethod
 
-from models.storage import Storage
-from models.bucket import Bucket
-from models.file import File
+from cartola.models import Storage, Bucket, File
 from cartola.connector import AwsConnection
 
 
@@ -20,13 +18,13 @@ class S3Writer(ABC):
         league_id = kwargs.get('id')
 
         if league_id is not None:
-            return f"""{folder_value}_{league_id}_{datetime.datetime.now().strftime('%Y-%d-%m, %H:%M:%S')}"""
-        return f"""{folder_value}_{datetime.datetime.now().strftime('%Y-%d-%m, %H:%M:%S')}"""
+            return f"""{folder_value}_{league_id}_{datetime.datetime.now().strftime('%Y-%d-%m_%H:%M:%S')}"""
+        return f"""{folder_value}_{datetime.datetime.now().strftime('%Y-%d-%m_%H:%M:%S')}"""
 
 
-@abstractmethod
-def upload_fileobj(self, data, folder: Storage, extension: File, **kwargs):
-    pass
+    @abstractmethod
+    def upload_fileobj(self, data, folder: Storage, extension: File, **kwargs):
+        pass
 
 
 class S3WriterParquet(S3Writer):

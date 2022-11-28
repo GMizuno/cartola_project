@@ -26,7 +26,7 @@ setup(
         version="0.1.0",
         description="Extract data football from api",
         url="CartolaData",
-        python_requires=">=3.10",
+        python_requires=">=3.9",
         long_description_content_type="text/markdown",
         author="Gabriel Mizuno",
         packages=find_packages(exclude=["tests"]),

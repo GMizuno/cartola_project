@@ -1,8 +1,8 @@
 from abc import abstractmethod
 import pandas as pd
-from cartola.reader import ReaderJson
+from cartola_project.reader import ReaderJson
 from .util import convert_time, clean_dict_key, convert_date
-from cartola.models import Bucket, Storage
+from cartola_project.models import Bucket, Storage
 
 
 class Transformer:

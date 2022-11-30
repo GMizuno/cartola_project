@@ -5,8 +5,8 @@ from io import BytesIO
 
 import pandas as pd
 
-from cartola.connector import AwsConnection
-from cartola.models import Bucket, Storage, File
+from cartola_project.connector import AwsConnection
+from cartola_project.models import Bucket, Storage, File
 from abc import ABC, abstractmethod
 
 

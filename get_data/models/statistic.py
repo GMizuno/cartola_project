@@ -1,7 +1,7 @@
 from datetime import date
 
 from get_data.export import export_statistics_bronze, export_statistics_silver
-from cartola import config_statistics_dict
+from cartola_project import config_statistics_dict
 from decouple import config
 
 params = config_statistics_dict(

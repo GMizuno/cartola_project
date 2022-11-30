@@ -30,6 +30,6 @@ setup(
         long_description_content_type="text/markdown",
         author="Gabriel Mizuno",
         packages=find_packages(exclude=["tests"]),
-        include_package_data=True,
+        include_package_data=False,
         install_requires=read_requirements("requirements.txt")
 )

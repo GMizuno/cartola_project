@@ -1,8 +1,8 @@
 from datetime import date
 
-from cartola import Fixtures, Teams, Matches, S3WriterJson, S3WriterParquet
-from cartola.transformations import FixturesTransformer, TeamsTransformer, MatchTransformer
-from cartola.models import Bucket, Storage
+from cartola_project import Fixtures, Teams, Matches, S3WriterJson, S3WriterParquet
+from cartola_project.transformations import FixturesTransformer, TeamsTransformer, MatchTransformer
+from cartola_project.models import Bucket, Storage
 from get_data.process import create_obt, filter_by_date, get_all_ids
 
 

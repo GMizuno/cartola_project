@@ -2,8 +2,8 @@ import datetime
 import json
 from abc import ABC, abstractmethod
 
-from cartola.models import Storage, Bucket, File
-from cartola.connector import AwsConnection
+from cartola_project.models import Storage, Bucket, File
+from cartola_project.connector import AwsConnection
 
 
 class S3Writer(ABC):

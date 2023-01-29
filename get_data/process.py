@@ -1,72 +1,55 @@
 from datetime import date
+
 import dask.dataframe as dd
+
+from cartola_project import ParquetReader
+from cartola_project.connector import CloudStorage
 from .util import win_home, win
 
 
-def get_all_ids(AcessKey, SecretKey) -> list:
-    d = dd.read_parquet(
-            's3://bootcamp-silver/matches/*.parquet',
-            storage_options={
-                    'key': AcessKey,
-                    'secret': SecretKey
-            }
-    )
-    return list(set(d.id_team_home.drop_duplicates().compute().to_list() + \
-                    d.id_team_away.drop_duplicates().compute().to_list()
+def get_all_ids(cloudstorage: CloudStorage, league_id: str, season_year: str) -> list:
+    d = ParquetReader(cloudstorage, f'teste_cartola_gabriel',
+                      f'matches/silver/league={league_id}/season={season_year}/').read_all_files()
+    return list(set(d.id_team_home.drop_duplicates().to_list() + \
+                    d.id_team_away.drop_duplicates().to_list()
                     )
                 )
 
 
-def filter_by_date(AcessKey, SecretKey, date_from: date, date_to: date):
-    dask_dataframe = dd.read_parquet(
-            's3://bootcamp-silver/matches/*.parquet',
-            storage_options={
-                    'key': AcessKey,
-                    'secret': SecretKey
-            }
-    )
-    dask_dataframe["reference_date"] = dd.to_datetime(dask_dataframe["reference_date"], format='%d-%m-%Y')
-    return dask_dataframe.query('reference_date >= @date_from and reference_date <= @date_to',
-                                local_dict={"date_from": date_from,
-                                            "date_to": date_to}
-                                ). \
+def filter_by_date(cloudstorage: CloudStorage, league_id: str, season_year: str, date_from: date, date_to: date):
+    dataframe = ParquetReader(cloudstorage,
+                              f'teste_cartola_gabriel',
+                              f'matches/silver/league={league_id}/season={season_year}/').read_all_files()
+    dataframe["reference_date"] = dd.to_datetime(dataframe["reference_date"], format='%d-%m-%Y')
+    return dataframe.query('reference_date >= @date_from and reference_date <= @date_to',
+                           local_dict={"date_from": date_from,
+                                       "date_to": date_to}
+                           ). \
         match_id. \
-        compute(). \
         to_list()
 
 
-def create_obt(AcessKey, SecretKey) -> None:
-    dask_dataframe1 = dd.read_parquet(
-            's3://bootcamp-silver/matches/*.parquet',
-            storage_options={
-                    'key': AcessKey,
-                    'secret': SecretKey
-            }
-    )
+def create_obt(cloudstorage: CloudStorage) -> None:
+    dataframe1 = ParquetReader(cloudstorage,
+                               f'teste_cartola_gabriel',
+                               f'matches/silver/').read_all_files()
 
-    dask_dataframe2 = dd.read_parquet(
-            's3://bootcamp-silver/statistics/*.parquet',
-            storage_options={
-                    'key': AcessKey,
-                    'secret': SecretKey
-            }
-    )
+    dataframe2 = ParquetReader(cloudstorage,
+                               f'teste_cartola_gabriel',
+                               f'statistics/silver/').read_all_files()
 
-    dask_dataframe3 = dd.read_parquet(
-            's3://bootcamp-silver/teams/*.parquet',
-            storage_options={
-                    'key': AcessKey,
-                    'secret': SecretKey
-            }
-    )
-    dask_dataframe3 = dask_dataframe3.astype({'team_id': 'int64'})
+    dataframe3 = ParquetReader(cloudstorage,
+                               f'teste_cartola_gabriel',
+                               f'teams/silver/').read_all_files()
 
-    result = dask_dataframe1.merge(dask_dataframe2, how="inner", on=['match_id'])
-    result = result.merge(dask_dataframe3, how="inner", on=['team_id'])
+    dataframe3 = dataframe3.astype({'team_id': 'int64'})
+
+    result = dataframe1.merge(dataframe2, how="inner", on=['match_id'])
+    result = result.merge(dataframe3, how="inner", on=['team_id'])
 
     result = result.assign(home=result.id_team_home == result.team_id)
-    result['win_home'] = result.apply(win_home, axis=1, meta='object')
-    result['win'] = result.apply(win, axis=1, meta='object')
+    result['win_home'] = result.apply(win_home, axis=1)
+    result['win'] = result.apply(win, axis=1)
     result = result.drop(columns='win_home')
 
-    return result.drop_duplicates().compute()
+    return result.drop_duplicates()

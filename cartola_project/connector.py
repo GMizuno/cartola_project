@@ -94,11 +94,5 @@ class GCSStorage(CloudStorage):
 
     def list_files(self, bucket_name: str, file_path: str, ) -> list:
         storage_client = self.client
-        bucket = storage_client.bucket(bucket_name=bucket_name)
-        blob = bucket.get_blob(file_path)
-
-        blobs = bucket.list_blobs()
-        for blob in blobs:
-            print(blob.name)
-
-        return []
+        blobs = storage_client.list_blobs(bucket_or_name=bucket_name, prefix=file_path)
+        return [blob.name for blob in blobs]

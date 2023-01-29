@@ -14,7 +14,7 @@ class Reader(ABC):
         pass
 
     @abstractmethod
-    def read_all_files(self):
+    def read_all_files(self, *args):
         pass
 
 
@@ -29,8 +29,10 @@ class JSONReader(Reader):
         file = self.cloud_storage.download(self.bucket_name, self.file_path)
         return json.loads(file.decode('utf-8'))
 
-    def read_all_files(self) -> list:
-        files = self.cloud_storage.list_files(self.bucket_name)
+    def read_all_files(self) -> list[dict]:
+        files = self.cloud_storage.list_files(self.bucket_name, self.file_path)
+        files_download = [self.cloud_storage.download(self.bucket_name, file) for file in files]
+        return [json.loads(file.decode('utf-8')) for file in files_download]
 
 
 class ParquetReader(Reader):
@@ -44,3 +46,8 @@ class ParquetReader(Reader):
         file = self.cloud_storage.download(self.bucket_name, self.file_path)
         pq_file = BytesIO(file)
         return pd.read_parquet(pq_file)
+
+    def read_all_files(self) -> pd.DataFrame:
+        files = self.cloud_storage.list_files(self.bucket_name, self.file_path)
+        files_download = [self.cloud_storage.download(self.bucket_name, file) for file in files]
+        return pd.concat([pd.read_parquet(BytesIO(file)) for file in files_download])

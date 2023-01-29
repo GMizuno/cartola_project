@@ -2,7 +2,6 @@ from abc import abstractmethod, ABC
 
 import pandas as pd
 
-from cartola_project.models import Bucket, StorageFolder
 from .util import convert_time, clean_dict_key, convert_date
 
 
@@ -47,22 +46,20 @@ class FixturesTransformer(Transformer):
 
 class TeamsTransformer(Transformer):
 
-    def __init__(self, bucket: Bucket, storage_folder: StorageFolder, cloud_storage) -> None:
-        self.bucket = bucket
-        self.storage_folder = storage_folder
-        self.cloud_storage = cloud_storage
+    def __init__(self, file: dict) -> None:
+        self.file = file
 
     def _get_transformation(self) -> pd.DataFrame:
         teams_json = []
 
-        for line in self.read.read_file():
+        for line in self.file:
             teams_json.append({
                 'team_id': int(line.get('parameters').get('id')),
                 'name': line.get('response')[0].get('team').get('name'),
                 'code': line.get('response')[0].get('team').get('code'),
                 'country': line.get('response')[0].get('team').get('country'),
-                    'city': line.get('response')[0].get('venue').get('city'),
-                    'logo': line.get('response')[0].get('team').get('logo')
+                'city': line.get('response')[0].get('venue').get('city'),
+                'logo': line.get('response')[0].get('team').get('logo')
             }
             )
 
@@ -79,16 +76,14 @@ class TeamsTransformer(Transformer):
 
 class MatchTransformer(Transformer):
 
-    def __init__(self, bucket: Bucket, storage_folder: StorageFolder, cloud_storage) -> None:
-        self.bucket = bucket
-        self.storage_folder = storage_folder
-        self.cloud_storage = cloud_storage
+    def __init__(self, file: dict) -> None:
+        self.file = file
 
     def _get_transformation(self) -> pd.DataFrame:
 
         stats_json = []
 
-        for informations in self.read.read_file():
+        for informations in self.file:
             for i in informations.get('response'):
                 stats_matches = {}
                 for j in i.get('statistics'):

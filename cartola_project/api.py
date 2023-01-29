@@ -1,16 +1,16 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import List
+
 import backoff
 import ratelimit
-
 import requests
 
 
-class Requester():
+class Requester(ABC):
     def __init__(self, api_host_key, api_secert_key):
         self.headers = {
-                "X-RapidAPI-Host": api_host_key,
-                "X-RapidAPI-Key": api_secert_key
+            "X-RapidAPI-Host": api_host_key,
+            "X-RapidAPI-Key": api_secert_key
         }
         self.base_endpoint = 'https://api-football-v1.p.rapidapi.com/v3/'
 
@@ -29,7 +29,7 @@ class Requester():
         response.raise_for_status()
         return response
 
-    def get_data(self, **kwargs):
+    def get_data(self, **kwargs) -> list:
         endpoint = self._get_endpoint()
         params = self._get_params(**kwargs)
         responses_json = [self.get_response(endpoint, self.headers, param).json() for param in params]

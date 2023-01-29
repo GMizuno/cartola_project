@@ -1,16 +1,12 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
+
 import pandas as pd
-from cartola_project.reader import ReaderJson
+
+from cartola_project.models import Bucket, StorageFolder
 from .util import convert_time, clean_dict_key, convert_date
-from cartola_project.models import Bucket, Storage
 
 
-class Transformer:
-
-    def __init__(self, bucket: Bucket, s3_folder: Storage, access_key: str, secret_access: str) -> None:
-        self.bucket = bucket
-        self.s3_folder = s3_folder
-        self.read = ReaderJson(bucket, s3_folder, access_key, secret_access)
+class Transformer(ABC):
 
     @abstractmethod
     def _get_transformation(self):
@@ -19,13 +15,10 @@ class Transformer:
 
 class FixturesTransformer(Transformer):
 
-    def __init__(self, access_key: str, secret_access: str, bucket: Bucket = Bucket.BRONZE,
-                 s3_folder: Storage = Storage.MATCHES) -> None:
-        super().__init__(bucket, s3_folder, access_key, secret_access)
-        self.acess_key = access_key
-        self.secret_key = secret_access
-        self.storage_option = {'key': access_key,
-                               'secret': secret_access}
+    def __init__(self, bucket: Bucket, storage_folder: StorageFolder, cloud_storage) -> None:
+        self.bucket = bucket
+        self.storage_folder = storage_folder
+        self.cloud_storage = cloud_storage
 
     def _get_transformation(self) -> pd.DataFrame:
 
@@ -56,23 +49,20 @@ class FixturesTransformer(Transformer):
 
 class TeamsTransformer(Transformer):
 
-    def __init__(self, access_key: str, secret_access: str, bucket: Bucket = Bucket.BRONZE,
-                 s3_folder: Storage = Storage.TEAMS) -> None:
-        super().__init__(bucket, s3_folder, access_key, secret_access)
-        self.acess_key = access_key
-        self.secret_key = secret_access
-        self.storage_option = {'key': access_key,
-                               'secret': secret_access}
+    def __init__(self, bucket: Bucket, storage_folder: StorageFolder, cloud_storage) -> None:
+        self.bucket = bucket
+        self.storage_folder = storage_folder
+        self.cloud_storage = cloud_storage
 
     def _get_transformation(self) -> pd.DataFrame:
         teams_json = []
 
         for line in self.read.read_file():
             teams_json.append({
-                    'team_id': int(line.get('parameters').get('id')),
-                    'name': line.get('response')[0].get('team').get('name'),
-                    'code': line.get('response')[0].get('team').get('code'),
-                    'country': line.get('response')[0].get('team').get('country'),
+                'team_id': int(line.get('parameters').get('id')),
+                'name': line.get('response')[0].get('team').get('name'),
+                'code': line.get('response')[0].get('team').get('code'),
+                'country': line.get('response')[0].get('team').get('country'),
                     'city': line.get('response')[0].get('venue').get('city'),
                     'logo': line.get('response')[0].get('team').get('logo')
             }
@@ -91,13 +81,10 @@ class TeamsTransformer(Transformer):
 
 class MatchTransformer(Transformer):
 
-    def __init__(self, access_key: str, secret_access: str, bucket: Bucket = Bucket.BRONZE,
-                 s3_folder: Storage = Storage.STATISTICS) -> None:
-        super().__init__(bucket, s3_folder, access_key, secret_access)
-        self.acess_key = access_key
-        self.secret_key = secret_access
-        self.storage_option = {'key': access_key,
-                               'secret': secret_access}
+    def __init__(self, bucket: Bucket, storage_folder: StorageFolder, cloud_storage) -> None:
+        self.bucket = bucket
+        self.storage_folder = storage_folder
+        self.cloud_storage = cloud_storage
 
     def _get_transformation(self) -> pd.DataFrame:
 

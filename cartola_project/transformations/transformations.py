@@ -15,15 +15,13 @@ class Transformer(ABC):
 
 class FixturesTransformer(Transformer):
 
-    def __init__(self, bucket: Bucket, storage_folder: StorageFolder, cloud_storage) -> None:
-        self.bucket = bucket
-        self.storage_folder = storage_folder
-        self.cloud_storage = cloud_storage
+    def __init__(self, file: dict) -> None:
+        self.file = file
 
     def _get_transformation(self) -> pd.DataFrame:
 
         fixture_json = []
-        file = self.read.read_file()
+        file = self.file
 
         for line in file:
             for index, value in enumerate(line.get('response')):

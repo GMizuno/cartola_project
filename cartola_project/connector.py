@@ -26,6 +26,10 @@ class CloudStorage(ABC):
     def upload(self, *args):
         pass
 
+    @abstractmethod
+    def list_files(self, *args):
+        pass
+
 
 # TODO: Add support for Google Cloud Storage without credentials
 class GCSStorage(CloudStorage):
@@ -87,3 +91,14 @@ class GCSStorage(CloudStorage):
         blob = bucket.get_blob(file_path)
 
         return blob.download_as_bytes()
+
+    def list_files(self, bucket_name: str, file_path: str, ) -> list:
+        storage_client = self.client
+        bucket = storage_client.bucket(bucket_name=bucket_name)
+        blob = bucket.get_blob(file_path)
+
+        blobs = bucket.list_blobs()
+        for blob in blobs:
+            print(blob.name)
+
+        return []

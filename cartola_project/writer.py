@@ -10,7 +10,7 @@ class Writer(ABC):
         pass
 
 
-class JSONWriter(Writer):
+class JsonWriter(Writer):
 
     def __init__(self, cloud_storage: CloudStorage, bucket_name: str, file_path: str, file: File):
         self.cloud_storage = cloud_storage

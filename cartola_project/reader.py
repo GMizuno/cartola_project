@@ -13,6 +13,10 @@ class Reader(ABC):
     def read(self):
         pass
 
+    @abstractmethod
+    def read_all_files(self):
+        pass
+
 
 class JSONReader(Reader):
 
@@ -24,6 +28,9 @@ class JSONReader(Reader):
     def read(self) -> dict:
         file = self.cloud_storage.download(self.bucket_name, self.file_path)
         return json.loads(file.decode('utf-8'))
+
+    def read_all_files(self) -> list:
+        files = self.cloud_storage.list_files(self.bucket_name)
 
 
 class ParquetReader(Reader):

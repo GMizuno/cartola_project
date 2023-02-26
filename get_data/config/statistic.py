@@ -21,7 +21,7 @@ def config_statistics_dict(league_id: str,
         'date_to': date_to,
     }
 
-
+# TODO: Mover essa parte, 
 params = [
     config_statistics_dict('39', '2022', date(2022, 10, 1), date(2022, 10, 12)),
     config_statistics_dict('71', '2022', date(2022, 10, 1), date(2022, 10, 12)),

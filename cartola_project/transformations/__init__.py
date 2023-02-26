@@ -1,3 +1,13 @@
-from .transformations import FixturesTransformer, TeamsTransformer, MatchTransformer
+from .transformations import (
+    FixturesTransformer,
+    TeamsTransformer,
+    MatchTransformer,
+    PlayerTransformer,
+)
 
-__all__ = ['FixturesTransformer', 'TeamsTransformer', 'MatchTransformer']
+__all__ = [
+    "FixturesTransformer",
+    "TeamsTransformer",
+    "MatchTransformer",
+    "PlayerTransformer",
+]

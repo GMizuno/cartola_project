@@ -1,0 +1,24 @@
+[project]
+name = 'cartola_project'
+description = ""
+authors = [
+    { name = 'Gabriel Mizuno', email = 'gabrielmizuno@gmail.com' },
+]
+requires-python = ">=3.8"
+license = { text = "MIT" }
+dynamic = ["version", "readme", "dependencies"]
+
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ['cartola_project']
+
+[tool.setuptools_scm]
+write_to = "cartola_project/VERSION.txt"
+
+[tool.setuptools.dynamic]
+readme = { file = ["docs/README.md"] }
+dependencies = { file = "requirements.txt" }
+

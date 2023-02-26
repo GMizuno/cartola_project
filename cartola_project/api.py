@@ -64,7 +64,7 @@ class Matches(Requester):
 class Players(Requester):
 
     def _get_endpoint(self) -> str:
-        pass
+        return f'{self.base_endpoint}fixtures/players'
 
-    def _get_params(self, player_id: List[str]) -> List[dict]:
-        pass
+    def _get_params(self, match_id: List[str]) -> List[dict]:
+        return [{"fixture": id} for id in match_id]

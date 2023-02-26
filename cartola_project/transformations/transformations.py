@@ -102,3 +102,12 @@ class MatchTransformer(Transformer):
         data['Ball_Possession'] = data['Ball_Possession'].div(100)
 
         return data.drop_duplicates()
+
+
+class PlayerTransformer(Transformer):
+
+    def __init__(self, file: dict) -> None:
+        self.file = file
+
+    def _get_transformation(self) -> pd.DataFrame:
+        pass

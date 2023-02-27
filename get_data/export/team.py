@@ -3,7 +3,7 @@ import pendulum
 from cartola_project import GCSStorage, Teams, JsonWriter, ParquetWriter
 from cartola_project.models import StorageFolder, Bucket
 from cartola_project.transformations import TeamsTransformer
-from get_data.process import get_all_ids
+from get_data.util import get_all_ids
 
 
 def export_team_bronze(api_host_key: str,

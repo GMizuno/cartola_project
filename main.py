@@ -1,5 +1,6 @@
-from cartola_project import JSONReader, ParquetReader, GCSStorage, JsonWriter, ParquetWriter
-from get_data.process import get_all_ids
+from cartola_project import JSONReader, ParquetReader, GCSStorage, JsonWriter, \
+    ParquetWriter
+from get_data.util import get_all_ids
 
 gcs = GCSStorage('cartola.json', 'cartola-360814')
 json_reader = JSONReader(gcs, 'teste_cartola_gabriel', 'teste_json.json').read()

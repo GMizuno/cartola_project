@@ -6,3 +6,4 @@ class StorageFolder(str, Enum):
     TEAMS = 'teams'
     STATISTICS = 'statistics'
     OBT = 'obt'
+    PLAYERS = 'players'

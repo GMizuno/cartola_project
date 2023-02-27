@@ -5,7 +5,7 @@ import pendulum
 from cartola_project import Matches, GCSStorage, JsonWriter, ParquetWriter
 from cartola_project.models import StorageFolder, Bucket
 from cartola_project.transformations import MatchTransformer
-from get_data.process import filter_by_date
+from get_data.util import filter_by_date
 
 
 def export_statistics_bronze(api_host_key: str,
@@ -14,7 +14,7 @@ def export_statistics_bronze(api_host_key: str,
                              season_year: str,
                              date_from: date,
                              date_to: date,
-                             ) -> None:
+                             ) -> list:
     statistics = Matches(api_host_key, api_secert_key)
     gcs = GCSStorage('cartola.json', 'cartola-360814')
 

@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 
 import pandas as pd
 
-from .util import convert_time, clean_dict_key, convert_date
+from .util import convert_time, clean_dict_key, convert_date, flatten_dict
 
 
 class Transformer(ABC):
@@ -109,5 +109,45 @@ class PlayerTransformer(Transformer):
     def __init__(self, file: dict) -> None:
         self.file = file
 
+    @staticmethod
+    def parameters(data: dict) -> dict:
+        return data.get('parameters', None)
+
+    @staticmethod
+    def response(data: dict) -> list[dict]:
+        return data.get('response', None)
+
+    @staticmethod
+    def get_team(data: dict) -> dict:
+        return data.get('team', None)
+
+    @staticmethod
+    def get_players(data: dict) -> dict:
+        return data.get('players', None)
+
+    @staticmethod
+    def get_player_info(data: dict) -> list[dict]:
+        return list(map(lambda x: flatten_dict(x.get('player')), data))
+
+    @staticmethod
+    def get_player_stats(data: dict) -> list[dict]:
+        return list(map(lambda x: flatten_dict(x.get('statistics')[0]), data))
+
+    @staticmethod
+    def build_json(data: dict) -> list[dict]:
+        team = flatten_dict(data.get('team', None), 'team')
+        players = data.get('players', None)
+        player_info = list(
+            map(lambda x: {**flatten_dict(x.get('player')), **team}, players))
+        player_statistics = list(
+            map(lambda x: flatten_dict(x.get('statistics')[0]), players))
+        return list(
+            map(lambda x, y: {**x, **y}, player_info, player_statistics))
+
     def _get_transformation(self) -> pd.DataFrame:
-        pass
+        players_info = []
+
+        for response in self.file:
+            players_info += PlayerTransformer.build_json(response)
+
+        return pd.DataFrame(players_info)

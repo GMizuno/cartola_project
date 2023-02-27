@@ -2,7 +2,7 @@ import pendulum
 
 from cartola_project import GCSStorage, ParquetWriter
 from cartola_project.models import StorageFolder
-from get_data.process import create_obt
+from get_data.util import create_obt
 
 
 def export_obt() -> None:

@@ -49,5 +49,11 @@ class ParquetReader(Reader):
 
     def read_all_files(self) -> pd.DataFrame:
         files = self.cloud_storage.list_files(self.bucket_name, self.file_path)
-        files_download = [self.cloud_storage.download(self.bucket_name, file) for file in files]
-        return pd.concat([pd.read_parquet(BytesIO(file)) for file in files_download])
+        print(files)
+        files_download = [
+            self.cloud_storage.download(self.bucket_name, file)
+            for file in
+            files
+        ]
+        return pd.concat(
+            [pd.read_parquet(BytesIO(file)) for file in files_download])

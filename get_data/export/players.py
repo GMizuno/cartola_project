@@ -19,7 +19,8 @@ def export_player_bronze(api_host_key: str,
     gcs = GCSStorage('cartola.json', 'cartola-360814')
     date = pendulum.now().strftime("%Y-%d-%m_%H:%M:%S")
 
-    matches_id = filter_by_date(gcs, league_id, season_year, date_from, date_to)
+    matches_id = filter_by_date(gcs, league_id, season_year, date_from,
+                                date_to)[0:3]
     data = partidas.get_data(match_id=matches_id)
 
     file_name = f"{StorageFolder.PLAYERS}/{Bucket.BRONZE}/league={league_id}/season={season_year}/{date}.json"
@@ -36,4 +37,5 @@ def export_player_silver(
     gcs = GCSStorage("cartola.json", "cartola-360814")
     date = pendulum.now().strftime("%Y-%d-%m_%H:%M:%S")
     file_name = f"{StorageFolder.PLAYERS}/{Bucket.SILVER}/league={league_id}/season={season_year}/{date}.parquet"
+    print(file_name)
     ParquetWriter(gcs, "teste_cartola_gabriel", file_name, data).write()

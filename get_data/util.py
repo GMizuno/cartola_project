@@ -90,21 +90,16 @@ def create_obt_matches(cloudstorage: CloudStorage) -> None:
 
 def create_obt_players(cloudstorage: CloudStorage) -> None:
     dataframe1 = ParquetReader(
-        cloudstorage, f"teste_cartola_gabriel", f"matches/players/"
+        cloudstorage, f"teste_cartola_gabriel", f"players/silver/"
     ).read_all_files()
 
     dataframe2 = ParquetReader(
-        cloudstorage, f"teste_cartola_gabriel", f"teams/silver/"
+        cloudstorage, f"teste_cartola_gabriel", f"matches/silver/"
     ).read_all_files()
 
-    dataframe2 = dataframe2.astype({"team_id": "int64"})
+    dataframe2 = dataframe2.astype({"match_id": "int64"})
+    dataframe1 = dataframe1.astype({"match_id": "int64"})
 
     result = dataframe1.merge(dataframe2, how="inner", on=["match_id"])
-    result = result.merge(dataframe2, how="inner", on=["team_id"])
-
-    result = result.assign(home=result.id_team_home == result.team_id)
-    result["win_home"] = result.apply(win_home, axis=1)
-    result["win"] = result.apply(win, axis=1)
-    result = result.drop(columns="win_home")
 
     return result.drop_duplicates()

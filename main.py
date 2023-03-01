@@ -18,4 +18,4 @@ gcs = GCSStorage('cartola.json', 'cartola-360814')
 json_reader = JSONReader(gcs, 'teste_cartola_gabriel',
                          'players/bronze/league=39/season=2022/').read_all_files()
 data = ParquetReader(gcs, 'teste_cartola_gabriel',
-                     'players/silver/').read_all_files()
+                     'matches/silver/').read_all_files()

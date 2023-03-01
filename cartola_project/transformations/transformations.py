@@ -149,9 +149,11 @@ class PlayerTransformer(Transformer):
         players_info = []
 
         for response in self.file:
-            players_info += PlayerTransformer.build_json(response)
+            match_id = self.parameters(response).get('fixture')
+            jsons_transform = PlayerTransformer.build_json(response)
+            players_info += [{**i, 'match_id': match_id} for i in
+                             jsons_transform]
 
         data = pd.DataFrame(players_info)
-        data['match_id'] = self.parameters(self.file).get('fixture')
 
         return data

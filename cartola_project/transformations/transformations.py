@@ -135,6 +135,7 @@ class PlayerTransformer(Transformer):
 
     @staticmethod
     def build_json(data: dict) -> list[dict]:
+        data = data.get('response')[0]  # TODO: Rever aqui
         team = flatten_dict(data.get('team', None), 'team')
         players = data.get('players', None)
         player_info = list(
@@ -150,4 +151,7 @@ class PlayerTransformer(Transformer):
         for response in self.file:
             players_info += PlayerTransformer.build_json(response)
 
-        return pd.DataFrame(players_info)
+        data = pd.DataFrame(players_info)
+        data['match_id'] = self.parameters(self.file).get('fixture')
+
+        return data

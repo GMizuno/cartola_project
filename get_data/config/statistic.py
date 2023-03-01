@@ -23,9 +23,7 @@ def config_statistics_dict(league_id: str,
 
 # TODO: Mover essa parte, 
 params = [
-    config_statistics_dict('39', '2022', date(2022, 10, 1), date(2022, 10, 12)),
     config_statistics_dict('71', '2022', date(2022, 10, 1), date(2022, 10, 12)),
-    config_statistics_dict('1', '2022', date(2022, 10, 1), date(2022, 10, 12))
 ]
 for param in params:
     result = export_statistics_bronze(**param)

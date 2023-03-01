@@ -15,7 +15,9 @@ def config_team_dict(league_id: str,
     }
 
 # TODO: Mover essa parte, 
-params = [config_team_dict('39', '2022'), config_team_dict('71', '2022'), config_team_dict('1', '2022')]
+params = [
+    config_team_dict('71', '2022'),
+]
 for param in params:
     file = export_team_bronze(**param)
     export_team_silver(file, param['league_id'], param['season_year'])

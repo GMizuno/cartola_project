@@ -257,3 +257,4 @@ poetry.toml
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm+all
 /cartola.json
 /cartola_project/VERSION.txt
+/2023-29-01_11_40_17.parquet

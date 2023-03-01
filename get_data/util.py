@@ -1,6 +1,6 @@
 from datetime import date
 
-from dask import dataframe as dd
+import pandas as pd
 from pandas import DataFrame
 
 from cartola_project import ParquetReader
@@ -53,16 +53,16 @@ def filter_by_date(
         f"teste_cartola_gabriel",
         f"matches/silver/league={league_id}/season={season_year}/",
     ).read_all_files()
-    dataframe["reference_date"] = dd.to_datetime(
-        dataframe["reference_date"], format="%d-%m-%Y"
-    )
-    return dataframe.query(
-        "reference_date >= @date_from and reference_date <= @date_to",
-        local_dict={"date_from": date_from, "date_to": date_to},
-    ).match_id.to_list()
+
+    dataframe["reference_date"] = pd.to_datetime(dataframe['date']).dt.date
+    result = dataframe.loc[
+        (dataframe['reference_date'] >= date_from) &
+        (dataframe['reference_date'] <= date_to)]. \
+        match_id.to_list()
+    return result
 
 
-def create_obt(cloudstorage: CloudStorage) -> None:
+def create_obt_matches(cloudstorage: CloudStorage) -> None:
     dataframe1 = ParquetReader(
         cloudstorage, f"teste_cartola_gabriel", f"matches/silver/"
     ).read_all_files()
@@ -79,6 +79,28 @@ def create_obt(cloudstorage: CloudStorage) -> None:
 
     result = dataframe1.merge(dataframe2, how="inner", on=["match_id"])
     result = result.merge(dataframe3, how="inner", on=["team_id"])
+
+    result = result.assign(home=result.id_team_home == result.team_id)
+    result["win_home"] = result.apply(win_home, axis=1)
+    result["win"] = result.apply(win, axis=1)
+    result = result.drop(columns="win_home")
+
+    return result.drop_duplicates()
+
+
+def create_obt_players(cloudstorage: CloudStorage) -> None:
+    dataframe1 = ParquetReader(
+        cloudstorage, f"teste_cartola_gabriel", f"matches/players/"
+    ).read_all_files()
+
+    dataframe2 = ParquetReader(
+        cloudstorage, f"teste_cartola_gabriel", f"teams/silver/"
+    ).read_all_files()
+
+    dataframe2 = dataframe2.astype({"team_id": "int64"})
+
+    result = dataframe1.merge(dataframe2, how="inner", on=["match_id"])
+    result = result.merge(dataframe2, how="inner", on=["team_id"])
 
     result = result.assign(home=result.id_team_home == result.team_id)
     result["win_home"] = result.apply(win_home, axis=1)

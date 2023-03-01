@@ -14,8 +14,11 @@ def config_matches_dict(league_id: str,
         'season_year': season_year
     }
 
+
 # TODO: Mover essa parte,
-params = [config_matches_dict('39', '2022'), config_matches_dict('71', '2022'), config_matches_dict('1', '2022')]
+params = [
+    config_matches_dict('71', '2022'),
+]
 for param in params:
     result = export_matches_bronze(**param)
     export_matches_silver(result, param['league_id'], param['season_year'])

@@ -1,6 +1,5 @@
 backoff==2.1.2
 cachetools==5.3.0
-cartola-project @ file:///Users/gabrielmizuno/Desktop/cartola_project
 certifi==2022.12.7
 charset-normalizer==2.0.12
 google-api-core==2.11.0

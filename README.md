@@ -30,9 +30,5 @@ Pattern)**~~
 
 :black_square_button: Create documentation to league id, team id and ...
 
-:black_square_button: Packaging
-
-:black_square_button: Put in Airflow
-
-:black_square_button: Using Asyncio in request
+~~:black_square_button: Packaging~~
 

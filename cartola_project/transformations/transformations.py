@@ -135,15 +135,18 @@ class PlayerTransformer(Transformer):
 
     @staticmethod
     def build_json(data: dict) -> list[dict]:
-        data = data.get('response')[0]  # TODO: Rever aqui
-        team = flatten_dict(data.get('team', None), 'team')
-        players = data.get('players', None)
-        player_info = list(
-            map(lambda x: {**flatten_dict(x.get('player')), **team}, players))
-        player_statistics = list(
-            map(lambda x: flatten_dict(x.get('statistics')[0]), players))
-        return list(
-            map(lambda x, y: {**x, **y}, player_info, player_statistics))
+        restult = []
+        for i in data.get('response'):
+            team = flatten_dict(i.get('team', None), 'team')
+            players = i.get('players', None)
+            player_info = list(
+                map(lambda x: {**flatten_dict(x.get('player')), **team},
+                    players))
+            player_statistics = list(
+                map(lambda x: flatten_dict(x.get('statistics')[0]), players))
+            restult += list(
+                map(lambda x, y: {**x, **y}, player_info, player_statistics))
+        return restult
 
     def _get_transformation(self) -> pd.DataFrame:
         players_info = []

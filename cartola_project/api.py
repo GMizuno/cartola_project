@@ -25,6 +25,7 @@ class Requester(ABC):
     @backoff.on_exception(backoff.expo, ratelimit.exception.RateLimitException, max_tries=10, factor=10)
     @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, max_tries=10, factor=10)
     def get_response(self, endpoint, header, param):
+        print(f'Request {endpoint} with {param} as parameter')
         response = requests.request("GET", endpoint, headers=header, params=param)
         response.raise_for_status()
         return response
@@ -32,7 +33,7 @@ class Requester(ABC):
     def get_data(self, **kwargs) -> list:
         endpoint = self._get_endpoint()
         params = self._get_params(**kwargs)
-        print(f'Using endpoint {endpoint} with {params}')
+        print(f'Using endpoint {endpoint} with {len(params)} parameter(s)')
         responses_json = [self.get_response(endpoint, self.headers, param).json() for param in params]
         return responses_json
 

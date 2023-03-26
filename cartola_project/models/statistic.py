@@ -1,9 +1,11 @@
-import json
 from dataclasses import dataclass
 from typing import Any
 from typing import List
 
+from dataclasses_json import dataclass_json
 
+
+@dataclass_json
 @dataclass
 class Cards:
     yellow: int
@@ -16,6 +18,7 @@ class Cards:
         return Cards(_yellow, _red)
 
 
+@dataclass_json
 @dataclass
 class Dribbles:
     attempts: int
@@ -30,6 +33,7 @@ class Dribbles:
         return Dribbles(_attempts, _success, _past)
 
 
+@dataclass_json
 @dataclass
 class Duels:
     total: int
@@ -54,6 +58,7 @@ class Fouls:
         return Fouls(_drawn, _committed)
 
 
+@dataclass_json
 @dataclass
 class Games:
     minutes: int
@@ -75,6 +80,7 @@ class Games:
                      _substitute)
 
 
+@dataclass_json
 @dataclass
 class Goals:
     total: int
@@ -90,6 +96,8 @@ class Goals:
         _saves = int(obj.get("saves") or 0)
         return Goals(_total, _conceded, _assists, _saves)
 
+
+@dataclass_json
 @dataclass
 class Passes:
     total: int
@@ -104,6 +112,7 @@ class Passes:
         return Passes(_total, _key, _accuracy)
 
 
+@dataclass_json
 @dataclass
 class Penalty:
     won: int
@@ -122,6 +131,7 @@ class Penalty:
         return Penalty(_won, _commited, _scored, _missed, _saved)
 
 
+@dataclass_json
 @dataclass
 class Player:
     id: int
@@ -136,6 +146,7 @@ class Player:
         return Player(_id, _name, _photo)
 
 
+@dataclass_json
 @dataclass
 class Tackles:
     total: int
@@ -150,6 +161,7 @@ class Tackles:
         return Tackles(_total, _blocks, _interceptions)
 
 
+@dataclass_json
 @dataclass
 class Shots:
     total: int
@@ -162,6 +174,7 @@ class Shots:
         return Shots(_total, _on)
 
 
+@dataclass_json
 @dataclass
 class Statistic:
     games: Games
@@ -193,6 +206,7 @@ class Statistic:
                          _duels, _dribbles, _fouls, _cards, _penalty)
 
 
+@dataclass_json
 @dataclass
 class Players:
     player: Player
@@ -205,6 +219,7 @@ class Players:
         return Players(_player, _statistics)
 
 
+@dataclass_json
 @dataclass
 class Team:
     id: int
@@ -234,27 +249,11 @@ class Info:
         _players = [Players.from_dict(y) for y in obj.get("players")]
         return Info(_team, _fixture, _players)
 
+
+@dataclass_json
 @dataclass
 class StatisticsPlayer:
     team: Team
     fixture: str
     player: Player
     statistics: Statistic
-
-
-with open('cartola_project/models/player.json', 'r') as f:
-    dados = json.load(f)
-
-fixture = dados[0].get('parameters')
-team1, team2 = dados[0].get('response')[0],  dados[0].get('response')[1]
-
-team1 = team1 | fixture
-team2 = team2 | fixture
-
-info1 = Info.from_dict(team1)
-
-team_model = info1.team
-fixture_model = info1.fixture
-player_model = info1.players[1].player
-statistics_model = info1.players[0].statistics[0]
-# s = StatisticsPlayer(team_model, fixture_model, player_model, statistics_model)

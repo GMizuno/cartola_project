@@ -1,12 +1,10 @@
-from abc import abstractmethod, ABC
 import json
+from abc import abstractmethod, ABC
 
 import pandas as pd
 
-from cartola_project.models import Match
-from cartola_project.transformations.util import (clean_dict_key, convert_time,
-                                                  convert_date,
-                                                  )
+from cartola_project.models.statistic import Info, StatisticsPlayer
+from cartola_project.transformations.util import flatten_dict
 
 
 class Transformer(ABC):
@@ -16,46 +14,49 @@ class Transformer(ABC):
         pass
 
 
-class FixturesTransformer(Transformer):
+class PlayerTransformer(Transformer):
 
     def __init__(self, file: dict) -> None:
         self.file = file
 
+    def extract_fixture(self) -> list:
+        return [file.get('parameters') for file in self.file]
+
+    def extract_teams(self) -> list[dict]:
+        team = []
+        responses = [(file.get('response'), file.get('parameters')) for file in self.file]
+        for response, fixture in responses:
+            team.append(response[0] | fixture)
+            team.append(response[1] | fixture)
+
+        return team
+
+    def to_dataframe(self) -> pd.DataFrame:
+        list_model_dict = [
+            flatten_dict(model.to_dict())
+            for model in
+            self.extract_model()
+        ]
+        return pd.DataFrame(list_model_dict).drop_duplicates()
+
     def extract_model(self):
-        response = self.file[0].get('response')
+        statistics = []
+        for team in self.extract_teams():
+            info = Info.from_dict(team)
+            team_model = info.team
+            fixture_model = info.fixture
+            for player in info.players:
+                player_model = player.player
+                statistics_model = player.statistics[0]
+                statistics.append(StatisticsPlayer(team_model, fixture_model,
+                                                   player_model,
+                                                   statistics_model))
+        return statistics
 
-        return [Match.from_dict(fixture) for fixture in response]
-
-    def to_dataframe(self, list_model: list):
-        data = pd.DataFrame([clean_dict_key(i) for i in list_model])
-
-        data.rename(columns={'partida_id': 'match_id', 'rodada': 'round'},
-                    inplace=True)
-        data.replace(to_replace=r'Regular Season - ', value='', regex=True,
-                     inplace=True)
-        data.replace(to_replace=r'Group Stage - ', value='', regex=True,
-                     inplace=True)
-
-        return data.drop_duplicates()
-
-    def _get_transformation(self) -> pd.DataFrame:
-
-        fixture_json = []
-
-        for fixture in self.extract_model():
-            result = {'partida_id': fixture.fixture.id,
-                      'date': convert_time(fixture.fixture.date),
-                      'reference_date': convert_date(fixture.fixture.date),
-                      'rodada': fixture.league.round,
-                      'league_id': fixture.league.id,
-                      'id_team_away': fixture.teams.away.id,
-                      'id_team_home': fixture.teams.home.id,
-                      'goals_home': fixture.goals.home,
-                      'goals_away': fixture.goals.away,
-                      'winner_home': fixture.teams.home.winner,
-                      'winner_away': fixture.teams.away.winner,
-                      }
-            fixture_json.append(result)
-
-        return self.to_dataframe(fixture_json)
+    def _get_transformation(self):
+        data = self.to_dataframe()
+        data.drop(['team_logo', 'team_update', 'player_photo', ], axis=1,
+                  inplace=True)
+        data.fillna(0, inplace=True)
+        return data
 

@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 
 import pandas as pd
 
-from cartola_project.models import (Club, Match, )
+from cartola_project.models import (Club, Match, Info, StatisticsPlayer, )
 from cartola_project.transformations.util import (convert_time, clean_dict_key,
                                                   convert_date, flatten_dict, )
 
@@ -126,54 +126,43 @@ class PlayerTransformer(Transformer):
     def __init__(self, file: dict) -> None:
         self.file = file
 
-    @staticmethod
-    def parameters(data: dict) -> dict:
-        return data.get('parameters', None)
+    def extract_fixture(self) -> list:
+        return [file.get('parameters') for file in self.file]
 
-    @staticmethod
-    def response(data: dict) -> list[dict]:
-        return data.get('response', None)
+    def extract_teams(self) -> list[dict]:
+        team = []
+        responses = [(file.get('response'), file.get('parameters')) for file in self.file]
+        for response, fixture in responses:
+            team.append(response[0] | fixture)
+            team.append(response[1] | fixture)
 
-    @staticmethod
-    def get_team(data: dict) -> dict:
-        return data.get('team', None)
+        return team
 
-    @staticmethod
-    def get_players(data: dict) -> dict:
-        return data.get('players', None)
+    def to_dataframe(self) -> pd.DataFrame:
+        list_model_dict = [
+            flatten_dict(model.to_dict())
+            for model in
+            self.extract_model()
+        ]
+        return pd.DataFrame(list_model_dict).drop_duplicates()
 
-    @staticmethod
-    def get_player_info(data: dict) -> list[dict]:
-        return list(map(lambda x: flatten_dict(x.get('player')), data))
+    def extract_model(self):
+        statistics = []
+        for team in self.extract_teams():
+            info = Info.from_dict(team)
+            team_model = info.team
+            fixture_model = info.fixture
+            for player in info.players:
+                player_model = player.player
+                statistics_model = player.statistics[0]
+                statistics.append(StatisticsPlayer(team_model, fixture_model,
+                                                   player_model,
+                                                   statistics_model))
+        return statistics
 
-    @staticmethod
-    def get_player_stats(data: dict) -> list[dict]:
-        return list(map(lambda x: flatten_dict(x.get('statistics')[0]), data))
-
-    @staticmethod
-    def build_json(data: dict) -> list[dict]:
-        restult = []
-        for i in data.get('response'):
-            team = flatten_dict(i.get('team', None), 'team')
-            players = i.get('players', None)
-            player_info = list(
-                map(lambda x: {**flatten_dict(x.get('player')), **team},
-                    players))
-            player_statistics = list(
-                map(lambda x: flatten_dict(x.get('statistics')[0]), players))
-            restult += list(
-                map(lambda x, y: {**x, **y}, player_info, player_statistics))
-        return restult
-
-    def _get_transformation(self) -> pd.DataFrame:
-        players_info = []
-
-        for response in self.file:
-            match_id = self.parameters(response).get('fixture')
-            jsons_transform = PlayerTransformer.build_json(response)
-            players_info += [{**i, 'match_id': match_id} for i in
-                             jsons_transform]
-
-        data = pd.DataFrame(players_info)
-
+    def _get_transformation(self):
+        data = self.to_dataframe()
+        data.drop(['team_logo', 'team_update', 'player_photo', ], axis=1,
+                  inplace=True)
+        data.fillna(0, inplace=True)
         return data

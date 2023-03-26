@@ -1,10 +1,12 @@
-import json
 from abc import abstractmethod, ABC
+import json
 
 import pandas as pd
 
-from cartola_project.models import Club
-from cartola_project.transformations.util import clean_dict_key
+from cartola_project.models import Match
+from cartola_project.transformations.util import (clean_dict_key, convert_time,
+                                                  convert_date,
+                                                  )
 
 
 class Transformer(ABC):
@@ -14,40 +16,46 @@ class Transformer(ABC):
         pass
 
 
-class TeamsTransformer(Transformer):
+class FixturesTransformer(Transformer):
 
     def __init__(self, file: dict) -> None:
         self.file = file
 
     def extract_model(self):
-        response = map(lambda x: x.get('response'), self.file)
-        return map(lambda x: Club.from_dict(x[0]), response)
+        response = self.file[0].get('response')
 
-    def to_dataframe(self) -> pd.DataFrame:
-        teams_json = self.extract_model()
-        data = pd.DataFrame([clean_dict_key(i) for i in teams_json])
+        return [Match.from_dict(fixture) for fixture in response]
 
-        data_location = data['city'].str.split(',', 1, expand=True)
-        data_location.rename(columns={0: 'city', 1: 'state'}, inplace=True)
-        data_location['state'] = data_location['state'].fillna(
-            data_location['city'])
-        data = data[['team_id', 'name', 'code', 'country', 'logo']]
-        data = pd.concat([data, data_location], axis=1)
+    def to_dataframe(self, list_model: list):
+        data = pd.DataFrame([clean_dict_key(i) for i in list_model])
+
+        data.rename(columns={'partida_id': 'match_id', 'rodada': 'round'},
+                    inplace=True)
+        data.replace(to_replace=r'Regular Season - ', value='', regex=True,
+                     inplace=True)
+        data.replace(to_replace=r'Group Stage - ', value='', regex=True,
+                     inplace=True)
 
         return data.drop_duplicates()
 
     def _get_transformation(self) -> pd.DataFrame:
-        teams_json = []
 
-        for club in self.extract_model():
-            teams_json.append({
-                'team_id': int(club.team.id),
-                'name': club.team.name,
-                'code': club.team.name,
-                'country': club.team.name,
-                'city': club.venue.city,
-                'logo': club.team.logo,
-            }
-            )
+        fixture_json = []
 
-        return self.to_dataframe()
+        for fixture in self.extract_model():
+            result = {'partida_id': fixture.fixture.id,
+                      'date': convert_time(fixture.fixture.date),
+                      'reference_date': convert_date(fixture.fixture.date),
+                      'rodada': fixture.league.round,
+                      'league_id': fixture.league.id,
+                      'id_team_away': fixture.teams.away.id,
+                      'id_team_home': fixture.teams.home.id,
+                      'goals_home': fixture.goals.home,
+                      'goals_away': fixture.goals.away,
+                      'winner_home': fixture.teams.home.winner,
+                      'winner_away': fixture.teams.away.winner,
+                      }
+            fixture_json.append(result)
+
+        return self.to_dataframe(fixture_json)
+

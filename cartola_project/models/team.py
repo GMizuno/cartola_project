@@ -35,7 +35,7 @@ class Venue:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Venue':
-        _id = int(obj.get("id"))
+        _id = int(obj.get("id") or 0)
         _name = str(obj.get("name"))
         _address = str(obj.get("address"))
         _city = str(obj.get("city"))

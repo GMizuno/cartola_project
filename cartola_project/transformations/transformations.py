@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 
 import pandas as pd
 
-from cartola_project.models import (Club, )
+from cartola_project.models import (Club, Match, )
 from cartola_project.transformations.util import (convert_time, clean_dict_key,
                                                   convert_date, flatten_dict, )
 
@@ -13,38 +13,47 @@ class Transformer(ABC):
     def _get_transformation(self):
         pass
 
-
 class FixturesTransformer(Transformer):
 
     def __init__(self, file: dict) -> None:
         self.file = file
 
-    def _get_transformation(self) -> pd.DataFrame:
+    def extract_model(self):
+        response = self.file[0].get('response')
 
-        fixture_json = []
-        file = self.file
+        return [Match.from_dict(fixture) for fixture in response]
 
-        for line in file:
-            for index, value in enumerate(line.get('response')):
-                result = {'partida_id': value.get('fixture').get('id'),
-                          'date': convert_time(value.get('fixture').get('date')),
-                          'reference_date': convert_date(value.get('fixture').get('date')),
-                          'rodada': value.get('league').get('round'),
-                          'league_id': value.get('league').get('id'),
-                          'id_team_away': value.get('teams').get('away').get('id'),
-                          'id_team_home': value.get('teams').get('home').get('id'),
-                          'goals_home': value.get('goals').get('home'),
-                          'goals_away': value.get('goals').get('away')
-                          }
-                fixture_json.append(result)
-        data = pd.DataFrame([clean_dict_key(i) for i in fixture_json])
+    def to_dataframe(self, list_model: list):
+        data = pd.DataFrame([clean_dict_key(i) for i in list_model])
 
-        data.rename(columns={'partida_id': 'match_id', 'rodada': 'round'}, inplace=True)
-        data.replace(to_replace=r'Regular Season - ', value='', regex=True, inplace=True)
-        data.replace(to_replace=r'Group Stage - ', value='', regex=True, inplace=True)
+        data.rename(columns={'partida_id': 'match_id', 'rodada': 'round'},
+                    inplace=True)
+        data.replace(to_replace=r'Regular Season - ', value='', regex=True,
+                     inplace=True)
+        data.replace(to_replace=r'Group Stage - ', value='', regex=True,
+                     inplace=True)
 
         return data.drop_duplicates()
 
+    def _get_transformation(self) -> pd.DataFrame:
+        fixture_json = []
+
+        for fixture in self.extract_model():
+            result = {'partida_id': fixture.fixture.id,
+                      'date': convert_time(fixture.fixture.date),
+                      'reference_date': convert_date(fixture.fixture.date),
+                      'rodada': fixture.league.round,
+                      'league_id': fixture.league.id,
+                      'id_team_away': fixture.teams.away.id,
+                      'id_team_home': fixture.teams.home.id,
+                      'goals_home': fixture.goals.home,
+                      'goals_away': fixture.goals.away,
+                      'winner_home': fixture.teams.home.winner,
+                      'winner_away': fixture.teams.away.winner,
+                      }
+            fixture_json.append(result)
+
+        return self.to_dataframe(fixture_json)
 
 class TeamsTransformer(Transformer):
 
@@ -55,9 +64,8 @@ class TeamsTransformer(Transformer):
         response = map(lambda x: x.get('response'), self.file)
         return map(lambda x: Club.from_dict(x[0]), response)
 
-    def to_dataframe(self) -> pd.DataFrame:
-        teams_json = self.extract_model()
-        data = pd.DataFrame([clean_dict_key(i) for i in teams_json])
+    def to_dataframe(self, list_model: list) -> pd.DataFrame:
+        data = pd.DataFrame([clean_dict_key(i) for i in list_model])
 
         data_location = data['city'].str.split(',', 1, expand=True)
         data_location.rename(columns={0: 'city', 1: 'state'}, inplace=True)
@@ -82,8 +90,7 @@ class TeamsTransformer(Transformer):
             }
             )
 
-        return self.to_dataframe()
-
+        return self.to_dataframe(teams_json)
 
 class MatchTransformer(Transformer):
 
@@ -113,7 +120,6 @@ class MatchTransformer(Transformer):
         data['Ball_Possession'] = data['Ball_Possession'].div(100)
 
         return data.drop_duplicates()
-
 
 class PlayerTransformer(Transformer):
 

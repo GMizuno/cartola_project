@@ -3,7 +3,7 @@ from abc import abstractmethod, ABC
 
 import pandas as pd
 
-from cartola_project.models.statistic import Info, StatisticsPlayer
+from cartola_project.models.player import Info, StatisticsPlayer
 from cartola_project.transformations.util import flatten_dict
 
 

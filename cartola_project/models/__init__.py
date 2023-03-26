@@ -1,6 +1,6 @@
 from .match import Match
 from .team import Club
-from .statistic import Info, StatisticsPlayer
+from .player import Info, StatisticsPlayer
 
 __ALL__ = [
     'Match',

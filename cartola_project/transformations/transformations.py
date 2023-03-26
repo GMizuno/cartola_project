@@ -2,7 +2,9 @@ from abc import abstractmethod, ABC
 
 import pandas as pd
 
-from .util import convert_time, clean_dict_key, convert_date, flatten_dict
+from cartola_project.models import (Club, )
+from cartola_project.transformations.util import (convert_time, clean_dict_key,
+                                                  convert_date, flatten_dict, )
 
 
 class Transformer(ABC):
@@ -49,29 +51,38 @@ class TeamsTransformer(Transformer):
     def __init__(self, file: dict) -> None:
         self.file = file
 
-    def _get_transformation(self) -> pd.DataFrame:
-        teams_json = []
+    def extract_model(self):
+        response = map(lambda x: x.get('response'), self.file)
+        return map(lambda x: Club.from_dict(x[0]), response)
 
-        for line in self.file:
-            teams_json.append({
-                'team_id': int(line.get('parameters').get('id')),
-                'name': line.get('response')[0].get('team').get('name'),
-                'code': line.get('response')[0].get('team').get('code'),
-                'country': line.get('response')[0].get('team').get('country'),
-                'city': line.get('response')[0].get('venue').get('city'),
-                'logo': line.get('response')[0].get('team').get('logo')
-            }
-            )
-
+    def to_dataframe(self) -> pd.DataFrame:
+        teams_json = self.extract_model()
         data = pd.DataFrame([clean_dict_key(i) for i in teams_json])
 
         data_location = data['city'].str.split(',', 1, expand=True)
         data_location.rename(columns={0: 'city', 1: 'state'}, inplace=True)
-        data_location['state'] = data_location['state'].fillna(data_location['city'])
+        data_location['state'] = data_location['state'].fillna(
+            data_location['city'])
         data = data[['team_id', 'name', 'code', 'country', 'logo']]
         data = pd.concat([data, data_location], axis=1)
 
         return data.drop_duplicates()
+
+    def _get_transformation(self) -> pd.DataFrame:
+        teams_json = []
+
+        for club in self.extract_model():
+            teams_json.append({
+                'team_id': int(club.team.id),
+                'name': club.team.name,
+                'code': club.team.name,
+                'country': club.team.name,
+                'city': club.venue.city,
+                'logo': club.team.logo,
+            }
+            )
+
+        return self.to_dataframe()
 
 
 class MatchTransformer(Transformer):

@@ -2,9 +2,12 @@ from abc import abstractmethod, ABC
 
 import pandas as pd
 
-from cartola_project.models import (Club, Match, Info, StatisticsPlayer, )
+from cartola_project.models import (Club, Match, Info, StatisticsPlayer,
+                                    TeamStatistics, )
 from cartola_project.transformations.util import (convert_time, clean_dict_key,
-                                                  convert_date, flatten_dict, )
+                                                  convert_date, flatten_dict,
+                                                  merge_dict, tranform_stats,
+                                                  unlist, )
 
 
 class Transformer(ABC):
@@ -97,29 +100,60 @@ class MatchTransformer(Transformer):
     def __init__(self, file: dict) -> None:
         self.file = file
 
+    def to_dataframe(self, list_model: list):
+        list_model_flat = [
+            flatten_dict(model.to_dict())
+            for model in
+            list_model
+        ]
+
+        data = pd.DataFrame([clean_dict_key(i) for i in list_model_flat])
+
+        return data.drop_duplicates()
+
+    def extract_parameters(self, dict_model: dict) -> dict:
+        return dict_model.get('parameters')
+
+    def extract_respose(self, dict_model) -> list:
+        return dict_model.get('response')
+
+    def extract_team_statistics(self, dict_model: dict) -> list[TeamStatistics]:
+        response_teams = self.extract_respose(dict_model)
+        team_statistics_list = []
+        for response_team in response_teams:
+            stats = response_team.get('statistics')
+            team = response_team.get('team')
+            new_stat = merge_dict(list(map(tranform_stats, stats)))
+
+            new_stat = {'statistics': new_stat}
+            team = {'team': team}
+            statistics = new_stat | team | self.extract_parameters(dict_model)
+            team_statistics_list.append(TeamStatistics.from_dict(statistics))
+
+        return team_statistics_list
+
     def _get_transformation(self) -> pd.DataFrame:
 
         stats_json = []
 
-        for informations in self.file:
-            for i in informations.get('response'):
-                stats_matches = {}
-                for j in i.get('statistics'):
-                    stats_matches.update({j.get('type'): str(j.get('value'))})
-                team_id = i.get('team')['id']
-                match_id = informations.get('parameters').get('fixture')
-                stats_matches.update({'team_id': str(team_id), 'match_id': str(match_id)})
-                stats_json.append(stats_matches)
+        for statistics in self.file:
+            stats_json.append(self.extract_team_statistics(statistics))
 
-        data = pd.DataFrame([clean_dict_key(i) for i in stats_json])
-
-        data.replace('None', 0, inplace=True)
+        data = self.to_dataframe(unlist(stats_json))
         data.replace(to_replace=r'%', value='', regex=True, inplace=True)
-        data = data.astype(int)
-        data['Passes_percentage'] = data['Passes_percentage'].div(100)
-        data['Ball_Possession'] = data['Ball_Possession'].div(100)
+        data.fillna(0, inplace=True)
+        data = data.astype(
+            {'statistics_Passesperc': 'int32',
+             'statistics_BallPossession': 'int32'}
+        )
+        data['statistics_Passesperc'] = data['statistics_Passesperc'].div(100)
+        data['statistics_BallPossession'] = data[
+            'statistics_BallPossession'].div(100)
 
-        return data.drop_duplicates()
+        data.drop(['team_logo', 'team_name', ], axis=1,
+                  inplace=True)
+
+        return data
 
 class PlayerTransformer(Transformer):
 
@@ -139,12 +173,12 @@ class PlayerTransformer(Transformer):
         return team
 
     def to_dataframe(self) -> pd.DataFrame:
-        list_model_dict = [
+        list_model_flat = [
             flatten_dict(model.to_dict())
             for model in
             self.extract_model()
         ]
-        return pd.DataFrame(list_model_dict).drop_duplicates()
+        return pd.DataFrame(list_model_flat).drop_duplicates()
 
     def extract_model(self):
         statistics = []

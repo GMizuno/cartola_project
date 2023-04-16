@@ -151,7 +151,7 @@ class Periods:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Periods':
-        _first = int(obj.get("first"))
+        _first = int(obj.get("first") or 0)
         _second = int(obj.get("second"))
         return Periods(_first, _second)
 
@@ -166,7 +166,7 @@ class Status:
     def from_dict(obj: Any) -> 'Status':
         _long = str(obj.get("long"))
         _short = str(obj.get("short"))
-        _elapsed = int(obj.get("elapsed"))
+        _elapsed = int(obj.get("elapsed") or 0)
         return Status(_long, _short, _elapsed)
 
 
@@ -210,11 +210,11 @@ class Fixture:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Fixture':
-        _id = int(obj.get("id"))
+        _id = int(obj.get("id") or 0)
         _referee = str(obj.get("referee"))
         _timezone = str(obj.get("timezone"))
         _date = str(obj.get("date"))
-        _timestamp = int(obj.get("timestamp"))
+        _timestamp = int(obj.get("timestamp") or 0)
         _periods = Periods.from_dict(obj.get("periods"))
         _venue = Venue.from_dict(obj.get("venue"))
         _status = Status.from_dict(obj.get("status"))

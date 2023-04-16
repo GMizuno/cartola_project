@@ -30,5 +30,7 @@ Pattern)**~~
 
 :black_square_button: Create documentation to league id, team id and ...
 
+:black_square_button: Use Pydantic
+
 ~~:black_square_button: Packaging~~
 

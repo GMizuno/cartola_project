@@ -75,8 +75,8 @@ class Goals:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Goals':
-        _home = int(obj.get("home"))
-        _away = int(obj.get("away"))
+        _home = int(obj.get("home") or 0)
+        _away = int(obj.get("away") or 0)
         return Goals(_home, _away)
 
 
@@ -99,8 +99,8 @@ class Fulltime:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Fulltime':
-        _home = obj.get("home")
-        _away = obj.get("away")
+        _home = int(obj.get("home") or 0)
+        _away = int(obj.get("away") or 0)
         return Fulltime(_home, _away)
 
 
@@ -111,8 +111,8 @@ class Halftime:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Halftime':
-        _home = int(obj.get("home"))
-        _away = int(obj.get("away"))
+        _home = int(obj.get("home") or 0)
+        _away = int(obj.get("away") or 0)
         return Halftime(_home, _away)
 
 
@@ -152,7 +152,7 @@ class Periods:
     @staticmethod
     def from_dict(obj: Any) -> 'Periods':
         _first = int(obj.get("first") or 0)
-        _second = int(obj.get("second"))
+        _second = int(obj.get("second") or 0)
         return Periods(_first, _second)
 
 

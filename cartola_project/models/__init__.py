@@ -3,10 +3,4 @@ from .team import Club
 from .player import Info, StatisticsPlayer
 from .statistic import TeamStatistics
 
-__ALL__ = [
-    'Match',
-    'Club',
-    'Info',
-    'StatisticsPlayer',
-    'TeamStatistics'
-]
+__ALL__ = ['Match', 'Club', 'Info', 'StatisticsPlayer', 'TeamStatistics']

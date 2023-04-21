@@ -4,15 +4,19 @@ from cartola_project.connector import CloudStorage, File
 
 
 class Writer(ABC):
-
     @abstractmethod
     def write(self):
         pass
 
 
 class JsonWriter(Writer):
-
-    def __init__(self, cloud_storage: CloudStorage, bucket_name: str, file_path: str, file: File):
+    def __init__(
+        self,
+        cloud_storage: CloudStorage,
+        bucket_name: str,
+        file_path: str,
+        file: File,
+    ):
         self.cloud_storage = cloud_storage
         self.bucket_name = bucket_name
         self.file_path = file_path
@@ -23,8 +27,13 @@ class JsonWriter(Writer):
 
 
 class ParquetWriter(Writer):
-
-    def __init__(self, cloud_storage: CloudStorage, bucket_name: str, file_path: str, file: File):
+    def __init__(
+        self,
+        cloud_storage: CloudStorage,
+        bucket_name: str,
+        file_path: str,
+        file: File,
+    ):
         self.cloud_storage = cloud_storage
         self.bucket_name = bucket_name
         self.file_path = file_path

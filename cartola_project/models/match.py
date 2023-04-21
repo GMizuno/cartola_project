@@ -218,8 +218,16 @@ class Fixture:
         _periods = Periods.from_dict(obj.get("periods"))
         _venue = Venue.from_dict(obj.get("venue"))
         _status = Status.from_dict(obj.get("status"))
-        return Fixture(_id, _referee, _timezone, _date, _timestamp, _periods,
-                       _venue, _status)
+        return Fixture(
+            _id,
+            _referee,
+            _timezone,
+            _date,
+            _timestamp,
+            _periods,
+            _venue,
+            _status,
+        )
 
 
 @dataclass

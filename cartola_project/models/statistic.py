@@ -3,6 +3,7 @@ from typing import Any
 
 from dataclasses_json import dataclass_json
 
+
 @dataclass_json
 @dataclass
 class Statistics:
@@ -41,11 +42,24 @@ class Statistics:
         _Totalpasses = int(obj.get("Total passes") or 0)
         _Passesaccurate = int(obj.get("Passes accurate") or 0)
         _Passesperc = str(obj.get("Passes %"))
-        return Statistics(_ShotsonGoal, _ShotsoffGoal, _TotalShots,
-                          _BlockedShots, _Shotsinsidebox, _Shotsoutsidebox,
-                          _Fouls, _CornerKicks, _Offsides, _BallPossession,
-                          _YellowCards, _RedCards, _GoalkeeperSaves,
-                          _Totalpasses, _Passesaccurate, _Passesperc, )
+        return Statistics(
+            _ShotsonGoal,
+            _ShotsoffGoal,
+            _TotalShots,
+            _BlockedShots,
+            _Shotsinsidebox,
+            _Shotsoutsidebox,
+            _Fouls,
+            _CornerKicks,
+            _Offsides,
+            _BallPossession,
+            _YellowCards,
+            _RedCards,
+            _GoalkeeperSaves,
+            _Totalpasses,
+            _Passesaccurate,
+            _Passesperc,
+        )
 
 
 @dataclass_json
@@ -61,6 +75,7 @@ class Team:
         _name = str(obj.get("name"))
         _logo = str(obj.get("logo"))
         return Team(_id, _name, _logo)
+
 
 @dataclass_json
 @dataclass

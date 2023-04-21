@@ -2,6 +2,7 @@ from typing import Any
 from dataclasses import dataclass
 import json
 
+
 @dataclass
 class Team:
     id: int
@@ -23,6 +24,7 @@ class Team:
         _logo = str(obj.get("logo"))
         return Team(_id, _name, _code, _country, _founded, _national, _logo)
 
+
 @dataclass
 class Venue:
     id: int
@@ -43,6 +45,7 @@ class Venue:
         _surface = str(obj.get("surface"))
         _image = str(obj.get("image"))
         return Venue(_id, _name, _address, _city, _capacity, _surface, _image)
+
 
 @dataclass
 class Club:

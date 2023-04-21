@@ -76,8 +76,9 @@ class Games:
         _rating = str(obj.get("rating"))
         _captain = obj.get("captain")
         _substitute = obj.get("substitute")
-        return Games(_minutes, _number, _position, _rating, _captain,
-                     _substitute)
+        return Games(
+            _minutes, _number, _position, _rating, _captain, _substitute
+        )
 
 
 @dataclass_json
@@ -202,8 +203,19 @@ class Statistic:
         _fouls = Fouls.from_dict(obj.get("fouls"))
         _cards = Cards.from_dict(obj.get("cards"))
         _penalty = Penalty.from_dict(obj.get("penalty"))
-        return Statistic(_games, _offsides, _shots, _goals, _passes, _tackles,
-                         _duels, _dribbles, _fouls, _cards, _penalty)
+        return Statistic(
+            _games,
+            _offsides,
+            _shots,
+            _goals,
+            _passes,
+            _tackles,
+            _duels,
+            _dribbles,
+            _fouls,
+            _cards,
+            _penalty,
+        )
 
 
 @dataclass_json

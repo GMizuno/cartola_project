@@ -1,6 +1,6 @@
-from typing import Any
-from dataclasses import dataclass
 import json
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass

@@ -1,18 +1,12 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
 import pandas as pd
 
-from cartola_project.models import (
-    Club,
-    Match,
-    Info,
-    StatisticsPlayer,
-    TeamStatistics,
-)
+from cartola_project.models import Club, Info, Match, StatisticsPlayer, TeamStatistics
 from cartola_project.transformations.util import (
-    convert_time,
     clean_dict_key,
     convert_date,
+    convert_time,
     flatten_dict,
     merge_dict,
     tranform_stats,

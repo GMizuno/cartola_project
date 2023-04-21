@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
-from typing import List
+from typing import Any, List
 
 from dataclasses_json import dataclass_json
 

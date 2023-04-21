@@ -1,8 +1,8 @@
 from .transformations import (
     FixturesTransformer,
-    TeamsTransformer,
     MatchTransformer,
     PlayerTransformer,
+    TeamsTransformer,
 )
 
 __all__ = [

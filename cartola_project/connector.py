@@ -1,5 +1,5 @@
 import json
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from io import BytesIO
 from pathlib import Path
 from typing import Union

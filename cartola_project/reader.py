@@ -1,17 +1,10 @@
 import json
-from abc import (
-    ABC,
-    abstractmethod,
-)
-from io import (
-    BytesIO,
-)
+from abc import ABC, abstractmethod
+from io import BytesIO
 
 import pandas as pd
 
-from cartola_project.connector import (
-    CloudStorage,
-)
+from cartola_project.connector import CloudStorage
 
 
 class Reader(ABC):

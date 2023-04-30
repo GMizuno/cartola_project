@@ -1,6 +1,6 @@
 [![pages-build-deployment](https://github.com/GMizuno/cartola_project/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/GMizuno/cartola_project/actions/workflows/pages/pages-build-deployment)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json)](https://github.com/charliermarsh/ruff)
-[![Black Logo](https://raw.githubusercontent.com/psf/black/main/docs/_static/logo2-readme.png)](https://black.readthedocs.io/en/stable/)
+![Black Logo](https://img.shields.io/badge/code%20style-black-000000.svg)
 
 # cartola_project
 

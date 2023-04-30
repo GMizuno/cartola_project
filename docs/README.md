@@ -14,4 +14,6 @@ Liga (Spain) and last one Bundesliga (Germany). After all, I will collect inform
 
 # How to install
 
+{% include "templates/install.md" %}
+
 

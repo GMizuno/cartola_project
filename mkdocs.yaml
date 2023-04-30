@@ -23,6 +23,18 @@ markdown_extensions:
 watch:
   - cartola_project
 
+plugins:
+  - search
+  - macros
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [ cartola_project ]
+
+
 extra:
   commands:
-    run: notas-musicais
+    install: pip install git+ssh://git@github.com/GMizuno/cartola_project.git
+    install_mac: pip3 install git+ssh://git@github.com/GMizuno/cartola_project.git
+
+

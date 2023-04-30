@@ -68,6 +68,7 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
+    "docs"
 ]
 
 [tool.ruff.per-file-ignores]

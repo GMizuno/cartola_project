@@ -4,12 +4,26 @@ from itertools import chain
 from dateutil import parser
 
 
-def convert_date(time):
+def convert_date(time: str) -> str:
+    """Convert time to date format
+
+    Args:
+        time: Time in string format
+
+    Returns: Time in string format
+    """
     time = parser.parse(time)
     return time.strftime("%d-%m-%Y")
 
 
-def convert_time(time):
+def convert_time(time: str) -> str:
+    """Convert time to time format include hour and minute
+
+    Args:
+        time: Time in string format
+
+    Returns: Time in string format
+    """
     time = parser.parse(time)
     return time.strftime("%d-%m-%Y %H:%M")
 

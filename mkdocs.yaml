@@ -1,0 +1,38 @@
+site_name: Cartola
+repo_url: https://github.com/GMizuno/cartola_project
+repo_name: GMizuno/cartola_project
+edit_uri: tree/main/docs
+
+theme:
+  name: material
+  language: pt-BR
+
+markdown_extensions:
+  - attr_list
+  - admonition
+  - pymdownx.tasklist
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+extra_css:
+  - stylesheets/extra.css
+
+watch:
+  - notas_musicais
+
+plugins:
+  - macros
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [notas_musicais]
+
+extra:
+  commands:
+    run: notas-musicais

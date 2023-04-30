@@ -23,13 +23,6 @@ markdown_extensions:
 watch:
   - cartola_project
 
-plugins:
-  - macros
-  - mkdocstrings:
-      handlers:
-        python:
-          paths: [notas_musicais]
-
 extra:
   commands:
     run: notas-musicais

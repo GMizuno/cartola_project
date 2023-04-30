@@ -24,7 +24,7 @@ extra_css:
   - stylesheets/extra.css
 
 watch:
-  - notas_musicais
+  - cartola_project
 
 plugins:
   - macros

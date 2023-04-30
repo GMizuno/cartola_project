@@ -2,14 +2,13 @@ import json
 from abc import ABC, abstractmethod
 from io import BytesIO
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 from google.cloud import storage
 from google.oauth2 import service_account
 
-GoogleCredentials = Union[str, dict, service_account.Credentials]
-File = Union[dict, list[dict], pd.DataFrame]
+GoogleCredentials = str | dict | service_account.Credentials
+File = dict | list[dict] | pd.DataFrames
 
 
 class CloudStorage(ABC):
@@ -30,7 +29,6 @@ class CloudStorage(ABC):
         pass
 
 
-# TODO: Add support for Google Cloud Storage without credentials
 class GCSStorage(CloudStorage):
     def __init__(self, credentials: GoogleCredentials, project_id: str) -> None:
         self.project_id = project_id
@@ -64,20 +62,25 @@ class GCSStorage(CloudStorage):
             self._client = storage.Client(project=self.project_id, credentials=self.get_credentials)
         return self._client
 
+    def _get_file_data(self, file_path: str, file: File) -> str | bytes:
+        suffix = Path(file_path).suffix
+        if suffix == ".json":
+            return json.dumps(file)
+        elif suffix == ".parquet":
+            return file.to_parquet()
+        else:
+            raise ValueError(f"Unsupported file type: {suffix}")
+
     def upload(self, bucket_name: str, file_path: str, file: File) -> None:
         storage_client = self.client
         bucket = storage_client.bucket(bucket_name=bucket_name)
         blob = bucket.blob(file_path)
 
-        if Path(file_path).suffix == ".json":
-            file = json.dumps(file)
-            blob.upload_from_string(file)
-        elif Path(file_path).suffix == ".parquet":
-            parquet_bytes = file.to_parquet()
-            file = BytesIO(parquet_bytes)
-            blob.upload_from_file(file)
+        file_data = self._get_file_data(file_path, file)
+        if isinstance(file_data, str):
+            blob.upload_from_string(file_data)
         else:
-            raise ValueError(f"Unsupported file type: {Path(file_path).suffix}")
+            blob.upload_from_file(BytesIO(file_data))
 
     def download(
         self,

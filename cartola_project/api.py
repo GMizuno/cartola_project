@@ -16,11 +16,11 @@ class Requester(ABC):
 
     @abstractmethod
     def _get_endpoint(self) -> str:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def _get_params(self, **kwargs) -> dict:
-        pass
+        raise NotImplementedError
 
     @backoff.on_exception(
         backoff.expo,
@@ -47,31 +47,81 @@ class Requester(ABC):
 
 class Fixtures(Requester):
     def _get_endpoint(self) -> str:
+        """Generates fixture`s  the endpoint for the API
+        Returns:
+            Endpoint string
+        """
         return f"{self.base_endpoint}fixtures"
 
     def _get_params(self, season_year: str, league_id: str) -> List[dict]:
+        """Generate a list of parameters for the API
+
+        Args:
+            season_year: Season year (in european format this year could different)
+            league_id: Id of the league
+
+        Returns:
+            List containing a dict of the parameters league and season
+        """
         return [{"league": league_id, "season": season_year}]
 
 
 class Teams(Requester):
     def _get_endpoint(self) -> str:
+        """Generates the team`s endpoint for the API
+        Returns:
+            Endpoint string
+        """
         return f"{self.base_endpoint}teams"
 
     def _get_params(self, team_id: List[str]) -> List[dict]:
+        """Generate a list of parameters for the API
+
+        Args:
+            team_id: List of team id
+
+        Returns:
+            List containing a dict of the parameters id that reporesents a team
+        """
         return [{"id": id} for id in team_id]
 
 
 class Matches(Requester):
     def _get_endpoint(self) -> str:
+        """Generates the matches`s endpoint for the API
+        Returns:
+            Endpoint string
+        """
         return f"{self.base_endpoint}fixtures/statistics"
 
     def _get_params(self, match_id: List[str]) -> List[dict]:
+        """Generate a list of parameters for the API
+
+        Args:
+            match_id: List of match id
+
+        Returns:
+            List containing a dict of the parameters fixture that reporesents a match
+        """
         return [{"fixture": id} for id in match_id]
 
 
 class Players(Requester):
     def _get_endpoint(self) -> str:
+        """Generates the player`s endpoint for the API
+        Returns:
+            Endpoint string
+        """
         return f"{self.base_endpoint}fixtures/players"
 
     def _get_params(self, match_id: List[str]) -> List[dict]:
+        """Generate a list of parameters for the API.
+        This endpoint is used to get the players of a match.
+
+        Args:
+            match_id: List of match id
+
+        Returns:
+            List containing a dict of the parameters fixture that represents a match
+        """
         return [{"fixture": id} for id in match_id]

@@ -32,15 +32,9 @@ class FixturesTransformer(Transformer):
     def to_dataframe(self, list_model: list):
         data = pd.DataFrame([clean_dict_key(i) for i in list_model])
 
-        data.rename(
-            columns={'partida_id': 'match_id', 'rodada': 'round'}, inplace=True
-        )
-        data.replace(
-            to_replace=r'Regular Season - ', value='', regex=True, inplace=True
-        )
-        data.replace(
-            to_replace=r'Group Stage - ', value='', regex=True, inplace=True
-        )
+        data.rename(columns={'partida_id': 'match_id', 'rodada': 'round'}, inplace=True)
+        data.replace(to_replace=r'Regular Season - ', value='', regex=True, inplace=True)
+        data.replace(to_replace=r'Group Stage - ', value='', regex=True, inplace=True)
 
         return data.drop_duplicates()
 
@@ -79,9 +73,7 @@ class TeamsTransformer(Transformer):
 
         data_location = data['city'].str.split(',', 1, expand=True)
         data_location.rename(columns={0: 'city', 1: 'state'}, inplace=True)
-        data_location['state'] = data_location['state'].fillna(
-            data_location['city']
-        )
+        data_location['state'] = data_location['state'].fillna(data_location['city'])
         data = data[['team_id', 'name', 'code', 'country', 'logo']]
         data = pd.concat([data, data_location], axis=1)
 
@@ -110,9 +102,7 @@ class MatchTransformer(Transformer):
         self.file = file
 
     def to_dataframe(self, list_model: list):
-        list_model_flat = [
-            flatten_dict(model.to_dict()) for model in list_model
-        ]
+        list_model_flat = [flatten_dict(model.to_dict()) for model in list_model]
 
         data = pd.DataFrame([clean_dict_key(i) for i in list_model_flat])
 
@@ -155,9 +145,7 @@ class MatchTransformer(Transformer):
             }
         )
         data['statistics_Passesperc'] = data['statistics_Passesperc'].div(100)
-        data['statistics_BallPossession'] = data[
-            'statistics_BallPossession'
-        ].div(100)
+        data['statistics_BallPossession'] = data['statistics_BallPossession'].div(100)
 
         data.drop(
             [
@@ -180,9 +168,7 @@ class PlayerTransformer(Transformer):
 
     def extract_teams(self) -> list[dict]:
         team = []
-        responses = [
-            (file.get('response'), file.get('parameters')) for file in self.file
-        ]
+        responses = [(file.get('response'), file.get('parameters')) for file in self.file]
         for response, fixture in responses:
             team.append(response[0] | fixture)
             team.append(response[1] | fixture)
@@ -190,9 +176,7 @@ class PlayerTransformer(Transformer):
         return team
 
     def to_dataframe(self) -> pd.DataFrame:
-        list_model_flat = [
-            flatten_dict(model.to_dict()) for model in self.extract_model()
-        ]
+        list_model_flat = [flatten_dict(model.to_dict()) for model in self.extract_model()]
         return pd.DataFrame(list_model_flat).drop_duplicates()
 
     def extract_model(self):

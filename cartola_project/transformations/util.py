@@ -28,8 +28,8 @@ def clean_dict_key(dictionary: dict):
     return remove_special_letter(remove_white_space_key(dictionary))
 
 
-def unlist(l: list) -> list:
-    return list(chain.from_iterable(l))
+def unlist(lista: list) -> list:
+    return list(chain.from_iterable(lista))
 
 
 def _flatten_dict_gen(d: dict, parent_key: str, sep: str):

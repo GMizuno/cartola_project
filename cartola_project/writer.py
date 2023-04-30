@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from cartola_project.connector import CloudStorage, File
+from cartola_project.storage import CloudStorage, File
 
 
 class Writer(ABC):

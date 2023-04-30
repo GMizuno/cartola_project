@@ -1,6 +1,6 @@
 from .api import Fixtures, Matches, Players, Teams
-from .connector import GCSStorage
 from .reader import JSONReader, ParquetReader
+from .storage import GCSStorage
 from .writer import JsonWriter, ParquetWriter
 
 __all__ = [

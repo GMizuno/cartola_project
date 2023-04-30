@@ -75,9 +75,7 @@ class Games:
         _rating = str(obj.get("rating"))
         _captain = obj.get("captain")
         _substitute = obj.get("substitute")
-        return Games(
-            _minutes, _number, _position, _rating, _captain, _substitute
-        )
+        return Games(_minutes, _number, _position, _rating, _captain, _substitute)
 
 
 @dataclass_json

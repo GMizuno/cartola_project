@@ -28,14 +28,10 @@ class Requester(ABC):
         max_tries=10,
         factor=10,
     )
-    @backoff.on_exception(
-        backoff.expo, requests.exceptions.HTTPError, max_tries=10, factor=10
-    )
+    @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, max_tries=10, factor=10)
     def get_response(self, endpoint, header, param):
         print(f"Request {endpoint} with {param} as parameter")
-        response = requests.request(
-            "GET", endpoint, headers=header, params=param
-        )
+        response = requests.request("GET", endpoint, headers=header, params=param)
         response.raise_for_status()
         return response
 
@@ -44,8 +40,7 @@ class Requester(ABC):
         params = self._get_params(**kwargs)
         print(f"Using endpoint {endpoint} with {len(params)} parameter(s)")
         responses_json = [
-            self.get_response(endpoint, self.headers, param).json()
-            for param in params
+            self.get_response(endpoint, self.headers, param).json() for param in params
         ]
         return responses_json
 

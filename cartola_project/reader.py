@@ -4,7 +4,7 @@ from io import BytesIO
 
 import pandas as pd
 
-from cartola_project.connector import CloudStorage
+from cartola_project.storage import CloudStorage
 
 
 class Reader(ABC):
@@ -90,6 +90,4 @@ class ParquetReader(Reader):
             )
             for file in files
         ]
-        return pd.concat(
-            [pd.read_parquet(BytesIO(file)) for file in files_download]
-        )
+        return pd.concat([pd.read_parquet(BytesIO(file)) for file in files_download])

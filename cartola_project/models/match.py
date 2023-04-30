@@ -40,7 +40,7 @@ class Teams:
     away: Away
 
     @staticmethod
-    def from_dict(obj: Any) -> 'Club':
+    def from_dict(obj: Any) -> 'Teams':
         _home = Home.from_dict(obj.get("home"))
         _away = Away.from_dict(obj.get("away"))
         return Teams(_home, _away)

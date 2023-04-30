@@ -41,16 +41,10 @@ class GCSStorage(CloudStorage):
         with open(self._credentials, "r") as f:
             file = json.load(f)
 
-        self._credentials = (
-            service_account.Credentials.from_service_account_info(file)
-        )
+        self._credentials = service_account.Credentials.from_service_account_info(file)
 
     def get_credentials_from_dict(self) -> None:
-        self._credentials = (
-            service_account.Credentials.from_service_account_info(
-                self._credentials
-            )
-        )
+        self._credentials = service_account.Credentials.from_service_account_info(self._credentials)
 
     @property
     def get_credentials(self) -> GoogleCredentials:
@@ -67,9 +61,7 @@ class GCSStorage(CloudStorage):
     @property
     def client(self) -> storage.Client:
         if self._client is None:
-            self._client = storage.Client(
-                project=self.project_id, credentials=self.get_credentials
-            )
+            self._client = storage.Client(project=self.project_id, credentials=self.get_credentials)
         return self._client
 
     def upload(self, bucket_name: str, file_path: str, file: File) -> None:
@@ -104,7 +96,5 @@ class GCSStorage(CloudStorage):
         file_path: str,
     ) -> list:
         storage_client = self.client
-        blobs = storage_client.list_blobs(
-            bucket_or_name=bucket_name, prefix=file_path
-        )
+        blobs = storage_client.list_blobs(bucket_or_name=bucket_name, prefix=file_path)
         return [blob.name for blob in blobs]

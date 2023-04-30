@@ -22,9 +22,18 @@ write_to = "cartola_project/VERSION.txt"
 readme = { file = ["docs/README.md"] }
 dependencies = { file = "requirements.txt" }
 
+[tool.taskipy.tasks]
+lint_check = "black --check --diff . && isort --check --diff . && ruff ."
+lint = "black . && isort  . && ruff --fix ."
+black = "black --check --diff ."
+isort = "isort --check --diff ."
+ruff = "ruff ."
+docs = "mkdocs serve"
+pre_test = "task lint"
+
 [tool.black]
 color = true
-line-length = 80
+line-length = 100
 target-version = ['py310']
 skip-string-normalization = true
 
@@ -35,3 +44,32 @@ multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
 combine_as_imports = true
+
+[tool.ruff]
+line-length = 100
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+

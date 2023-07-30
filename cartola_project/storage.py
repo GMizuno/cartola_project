@@ -52,6 +52,8 @@ class GCSStorage(CloudStorage):
             self.get_credentials_from_dict()
         elif isinstance(self._credentials, str):
             self.get_credentials_from_json()
+        elif self._credentials is None:
+            print("Using default inferred from the environment")
         else:
             raise ValueError("Credentials should be either string or dict")
         return self._credentials

@@ -8,7 +8,7 @@ from google.cloud import storage
 from google.oauth2 import service_account
 
 GoogleCredentials = str | dict | service_account.Credentials
-File = dict | list[dict] | pd.DataFrames
+File = dict | list[dict] | pd.DataFrame
 
 
 class CloudStorage(ABC):

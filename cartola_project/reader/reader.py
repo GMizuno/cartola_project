@@ -4,7 +4,7 @@ from io import BytesIO
 
 import pandas as pd
 
-from cartola_project.storage import CloudStorage
+from cartola_project.storage.storage import Storage
 
 
 class Reader(ABC):
@@ -28,7 +28,7 @@ class JSONReader(Reader):
 
     def __init__(
         self,
-        cloud_storage: CloudStorage,
+        cloud_storage: Storage,
         bucket_name: str,
         file_path: str,
     ):
@@ -74,7 +74,7 @@ class ParquetReader(Reader):
 
     def __init__(
         self,
-        cloud_storage: CloudStorage,
+        cloud_storage: Storage,
         bucket_name: str,
         file_path: str,
     ):

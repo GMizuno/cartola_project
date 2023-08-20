@@ -11,7 +11,7 @@ GoogleCredentials = str | dict | service_account.Credentials
 File = dict | list[dict] | pd.DataFrame
 
 
-class CloudStorage(ABC):
+class Storage(ABC):
     @abstractmethod
     def client(self):
         pass
@@ -29,10 +29,11 @@ class CloudStorage(ABC):
         pass
 
 
-class GCSStorage(CloudStorage):
-    def __init__(self, credentials: GoogleCredentials, project_id: str) -> None:
+class GCSStorage(Storage):
+    def __init__(self, credentials: GoogleCredentials, project_id: str, bucket_name: str) -> None:
         self.project_id = project_id
         self._credentials = credentials
+        self.bucket_name = bucket_name
         self._client = None
 
     def get_credentials_from_json(self) -> None:
@@ -73,9 +74,13 @@ class GCSStorage(CloudStorage):
         else:
             raise ValueError(f"Unsupported file type: {suffix}")
 
-    def upload(self, bucket_name: str, file_path: str, file: File) -> None:
+    def upload(
+        self,
+        file_path: str,
+        file: File,
+    ) -> None:
         storage_client = self.client
-        bucket = storage_client.bucket(bucket_name=bucket_name)
+        bucket = storage_client.bucket(bucket_name=self.bucket_name)
         blob = bucket.blob(file_path)
 
         file_data = self._get_file_data(file_path, file)
@@ -86,20 +91,56 @@ class GCSStorage(CloudStorage):
 
     def download(
         self,
-        bucket_name: str,
         file_path: str,
     ) -> bytes:
         storage_client = self.client
-        bucket = storage_client.bucket(bucket_name=bucket_name)
+        bucket = storage_client.bucket(bucket_name=self.bucket_name)
         blob = bucket.get_blob(file_path)
 
         return blob.download_as_bytes()
 
     def list_files(
         self,
-        bucket_name: str,
         file_path: str,
     ) -> list:
         storage_client = self.client
-        blobs = storage_client.list_blobs(bucket_or_name=bucket_name, prefix=file_path)
+        blobs = storage_client.list_blobs(bucket_or_name=self.bucket_name, prefix=file_path)
         return [blob.name for blob in blobs]
+
+
+class LocalStorage(Storage):
+    def __init__(self):
+        self._client = None
+        self.is_cloud = False
+
+    def client(self):
+        print(f'You are using local storage')
+        return self._client
+
+    def upload(self, file_path: str, file: File):
+        file_path = Path(file_path)
+
+        if file_path.suffix == ".json":
+            file = json.dumps(file)
+            with open(file_path, "w") as f:
+                f.write(file)
+        elif file_path.suffix == ".parquet":
+            return file.to_parquet()
+        else:
+            raise ValueError(f"Unsupported file type: {file_path.suffix}")
+
+    def download(self, file_path: str = '.'):
+        file_path = Path(file_path)
+
+        if file_path.suffix == '.parquet':
+            return pd.read_parquet(file_path)
+        elif file_path.suffix == '.parquet':
+            with open(file_path, 'rb') as f:
+                file = f.read()
+                return json.loads(file)
+        else:
+            raise ValueError(f"Unsupported file type: {file_path.suffix}")
+
+    def list_files(self, file_path):
+        path = Path(file_path)
+        return [item for item in path.iterdir() if item.is_file()]

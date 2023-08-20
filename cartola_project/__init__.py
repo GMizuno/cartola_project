@@ -1,16 +1,14 @@
 from .api import Fixtures, Matches, Players, Teams
-from .reader import JSONReader, ParquetReader
-from .storage import GCSStorage
-from .writer import JsonWriter, ParquetWriter
+from .reader import factory_reader
+from .storage import factory_storage
+from .writer import factory_writer
 
 __all__ = [
     "Fixtures",
     "Matches",
     "Teams",
     "Players",
-    "GCSStorage",
-    "JSONReader",
-    "ParquetReader",
-    "JsonWriter",
-    "ParquetWriter",
+    "factory_storage",
+    "factory_reader",
+    "factory_writer",
 ]

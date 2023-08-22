@@ -75,11 +75,9 @@ class ParquetReader(Reader):
     def __init__(
         self,
         cloud_storage: Storage,
-        bucket_name: str,
         file_path: str,
     ):
         self.file_path = file_path
-        self.bucket_name = bucket_name
         self.cloud_storage = cloud_storage
 
     def read(self) -> pd.DataFrame:
@@ -90,7 +88,6 @@ class ParquetReader(Reader):
             Pandas DataFrame.
         """
         file = self.cloud_storage.download(
-            self.bucket_name,
             self.file_path,
         )
         pq_file = BytesIO(file)
@@ -104,7 +101,6 @@ class ParquetReader(Reader):
             Pandas DataFrame.
         """
         files = self.cloud_storage.list_files(
-            self.bucket_name,
             self.file_path,
         )
 
@@ -112,7 +108,6 @@ class ParquetReader(Reader):
 
         files_download = [
             self.cloud_storage.download(
-                self.bucket_name,
                 file,
             )
             for file in files

@@ -1,6 +1,6 @@
 [project]
 name = 'cartola_project'
-description = ""
+description = "Wrapper for collect data from some football tournament"
 authors = [
     { name = 'Gabriel Mizuno', email = 'gabrielmizuno@gmail.com' },
 ]

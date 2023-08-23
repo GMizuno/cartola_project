@@ -29,11 +29,9 @@ class JSONReader(Reader):
     def __init__(
         self,
         cloud_storage: Storage,
-        bucket_name: str,
         file_path: str,
     ):
         self.cloud_storage = cloud_storage
-        self.bucket_name = bucket_name
         self.file_path = file_path
 
     def read(self) -> dict:
@@ -44,7 +42,6 @@ class JSONReader(Reader):
 
         """
         file = self.cloud_storage.download(
-            self.bucket_name,
             self.file_path,
         )
         return json.loads(file.decode("utf-8"))
@@ -56,12 +53,11 @@ class JSONReader(Reader):
             List of Json objects.
         """
         files = self.cloud_storage.list_files(
-            self.bucket_name,
             self.file_path,
         )
+
         files_download = [
             self.cloud_storage.download(
-                self.bucket_name,
                 file,
             )
             for file in files

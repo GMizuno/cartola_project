@@ -71,7 +71,7 @@ class TeamsTransformer(Transformer):
     def to_dataframe(self, list_model: list) -> pd.DataFrame:
         data = pd.DataFrame([clean_dict_key(i) for i in list_model])
 
-        data_location = data['city'].str.split(',', 1, expand=True)
+        data_location = data['city'].str.split(',', n=1, expand=True)
         data_location.rename(columns={0: 'city', 1: 'state'}, inplace=True)
         data_location['state'] = data_location['state'].fillna(data_location['city'])
         data = data[['team_id', 'name', 'code', 'country', 'logo']]

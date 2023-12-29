@@ -1,5 +1,3 @@
-import json
-
 import pandas as pd
 
 from cartola_project.models import MatchItem
@@ -34,10 +32,3 @@ class MatchTransformer(Transformer):
         return pd.DataFrame(
             [self.extract_field(response) for response in responses]
         ).drop_duplicates()
-
-
-with open('2023-30-03_18_58_27.json') as file:
-    data = json.load(file)
-
-mt = MatchTransformer(data)
-x = mt.transformation()

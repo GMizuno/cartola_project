@@ -114,7 +114,7 @@ class LocalStorage(Storage):
         self.is_cloud = False
 
     def client(self):
-        print(f'You are using local storage')
+        print('You are using local storage')
         return self._client
 
     def upload(self, file_path: str, file: File):
@@ -134,7 +134,7 @@ class LocalStorage(Storage):
 
         if file_path.suffix == '.parquet':
             return pd.read_parquet(file_path)
-        elif file_path.suffix == '.parquet':
+        elif file_path.suffix == '.json':
             with open(file_path, 'rb') as f:
                 file = f.read()
                 return json.loads(file)

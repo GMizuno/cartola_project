@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import List, Optional
 
 from dateutil import parser
 from pydantic import BaseModel, Field, computed_field, field_validator
@@ -20,7 +20,7 @@ class Periods(BaseModel):
 
 
 class Venue(BaseModel):
-    id: int
+    id: Optional[int]
     name: str
     city: str
 
@@ -33,7 +33,7 @@ class Status(BaseModel):
 
 class Fixture(BaseModel):
     id: int
-    referee: str
+    referee: str = Field(exclude=True)
     timezone: str = Field(exclude=True)
     date: str
     timestamp: int = Field(exclude=True)
@@ -72,14 +72,14 @@ class Home(BaseModel):
     id: int = Field(serialization_alias='id_team_home')
     name: str = Field(exclude=True)
     logo: str = Field(exclude=True)
-    winner: bool = Field(serialization_alias='winner_home')
+    winner: Optional[bool] = Field(serialization_alias='winner_home')
 
 
 class Away(BaseModel):
     id: int = Field(serialization_alias='id_team_away')
     name: str = Field(exclude=True)
     logo: str = Field(exclude=True)
-    winner: bool = Field(serialization_alias='winner_away')
+    winner: Optional[bool] = Field(serialization_alias='winner_away')
 
 
 class Teams(BaseModel):
@@ -92,28 +92,28 @@ class Teams(BaseModel):
 
 
 class Goals(BaseModel):
-    home: int = Field(serialization_alias='goals_home')
-    away: int = Field(serialization_alias='goals_away')
+    home: Optional[int] = Field(serialization_alias='goals_home')
+    away: Optional[int] = Field(serialization_alias='goals_away')
 
 
 class Halftime(BaseModel):
-    home: int
-    away: int
+    home: Optional[int]
+    away: Optional[int]
 
 
 class Fulltime(BaseModel):
-    home: int
-    away: int
+    home: Optional[int]
+    away: Optional[int]
 
 
 class Extratime(BaseModel):
-    home: Any
-    away: Any
+    home: Optional[int]
+    away: Optional[int]
 
 
 class Penalty(BaseModel):
-    home: Any
-    away: Any
+    home: Optional[int]
+    away: Optional[int]
 
 
 class Score(BaseModel):

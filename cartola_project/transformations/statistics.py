@@ -6,7 +6,7 @@ from cartola_project.models import StatisticsItem
 from cartola_project.transformations.transformations import Transformer
 
 
-class TeamTransformer(Transformer):
+class StatisticsTransformer(Transformer):
     def __init__(self, file: list[dict]) -> None:
         self.file = file
 

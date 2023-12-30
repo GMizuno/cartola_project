@@ -13,14 +13,14 @@ class Paging(BaseModel):
 
 
 class Team(BaseModel):
-    id: int
+    id: int = Field(serialization_alias='teams_id')
     name: str = Field(exclude=True)
     logo: str = Field(exclude=True)
     update: str = Field(exclude=True)
 
 
 class PlayerInfo(BaseModel):
-    id: int
+    id: int = Field(serialization_alias='player_id')
     name: str
     photo: Optional[str] = Field(exclude=True)
 
@@ -35,8 +35,13 @@ class Games(BaseModel):
 
     @field_validator('minutes')
     @classmethod
-    def parse_none(cls, v) -> int:
+    def parse_none_int(cls, v) -> int:
         return v if v is not None else 0
+
+    @field_validator('rating')
+    @classmethod
+    def parse_none_str(cls, v) -> int:
+        return v if v is not None else ''
 
 
 class Shots(BaseModel):
@@ -64,9 +69,9 @@ class Goals(BaseModel):
 class Passes(BaseModel):
     total: Optional[int]
     key: Optional[int]
-    accuracy: Optional[str]
+    accuracy: Optional[int]
 
-    @field_validator('total', 'key')
+    @field_validator('*')
     @classmethod
     def parse_none(cls, v) -> int:
         return v if v is not None else 0

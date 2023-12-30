@@ -1,6 +1,6 @@
-from .match import Match
-from .player import Info, StatisticsPlayer
-from .statistic import TeamStatistics
-from .team import Club
+from .match import MatchItem
+from .player import PlayerItem
+from .statistic import StatisticsItem
+from .team import TeamItem
 
-__ALL__ = ['Match', 'Club', 'Info', 'StatisticsPlayer', 'TeamStatistics']
+__ALL__ = ['MatchItem', 'PlayerItem', 'StatisticsItem', 'TeamItem']

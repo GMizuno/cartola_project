@@ -1,182 +1,150 @@
-from dataclasses import dataclass
-from typing import Any, List
+from typing import Any, List, Optional
 
-from dataclasses_json import dataclass_json
-
-
-@dataclass_json
-@dataclass
-class Cards:
-    yellow: int
-    red: int
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Cards':
-        _yellow = int(obj.get("yellow") or 0)
-        _red = int(obj.get("red") or 0)
-        return Cards(_yellow, _red)
+from pydantic import BaseModel, Field, field_validator
 
 
-@dataclass_json
-@dataclass
-class Dribbles:
-    attempts: int
-    success: int
-    past: int
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Dribbles':
-        _attempts = int(obj.get("attempts") or 0)
-        _success = int(obj.get("success") or 0)
-        _past = int(obj.get("past") or 0)
-        return Dribbles(_attempts, _success, _past)
+class Parameters(BaseModel):
+    fixture: str
 
 
-@dataclass_json
-@dataclass
-class Duels:
+class Paging(BaseModel):
+    current: int
     total: int
-    won: int
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Duels':
-        _total = int(obj.get("total") or 0)
-        _won = int(obj.get("won") or 0)
-        return Duels(_total, _won)
 
 
-@dataclass
-class Fouls:
-    drawn: int
-    committed: int
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Fouls':
-        _drawn = int(obj.get("drawn") or 0)
-        _committed = int(obj.get("committed") or 0)
-        return Fouls(_drawn, _committed)
+class Team(BaseModel):
+    id: int = Field(serialization_alias='teams_id')
+    name: str = Field(exclude=True)
+    logo: str = Field(exclude=True)
+    update: str = Field(exclude=True)
 
 
-@dataclass_json
-@dataclass
-class Games:
-    minutes: int
+class PlayerInfo(BaseModel):
+    id: int = Field(serialization_alias='player_id')
+    name: str
+    photo: Optional[str] = Field(exclude=True)
+
+
+class Games(BaseModel):
+    minutes: Optional[int]
     number: int
     position: str
-    rating: object
+    rating: Optional[str]
     captain: bool
     substitute: bool
 
-    @staticmethod
-    def from_dict(obj: Any) -> 'Games':
-        _minutes = int(obj.get("minutes") or 0)
-        _number = int(obj.get("number") or 0)
-        _position = str(obj.get("position"))
-        _rating = str(obj.get("rating"))
-        _captain = obj.get("captain")
-        _substitute = obj.get("substitute")
-        return Games(_minutes, _number, _position, _rating, _captain, _substitute)
+    @field_validator('minutes')
+    @classmethod
+    def parse_none_int(cls, v) -> int:
+        return v if v is not None else 0
+
+    @field_validator('rating')
+    @classmethod
+    def parse_none_str(cls, v) -> int:
+        return v if v is not None else ''
 
 
-@dataclass_json
-@dataclass
-class Goals:
-    total: int
+class Shots(BaseModel):
+    total: Optional[int]
+    on: Optional[int]
+
+    @field_validator('*')
+    @classmethod
+    def parse_none(cls, v) -> int:
+        return v if v is not None else 0
+
+
+class Goals(BaseModel):
+    total: Optional[int]
     conceded: int
-    assists: int
-    saves: int
+    assists: Optional[int]
+    saves: Optional[int]
 
-    @staticmethod
-    def from_dict(obj: Any) -> 'Goals':
-        _total = int(obj.get("total") or 0)
-        _conceded = int(obj.get("conceded") or 0)
-        _assists = int(obj.get("assists") or 0)
-        _saves = int(obj.get("saves") or 0)
-        return Goals(_total, _conceded, _assists, _saves)
+    @field_validator('*')
+    @classmethod
+    def parse_none(cls, v) -> int:
+        return v if v is not None else 0
 
 
-@dataclass_json
-@dataclass
-class Passes:
-    total: int
-    key: int
-    accuracy: object
+class Passes(BaseModel):
+    total: Optional[int]
+    key: Optional[int]
+    accuracy: Optional[int]
 
-    @staticmethod
-    def from_dict(obj: Any) -> 'Passes':
-        _total = int(obj.get("total") or 0)
-        _key = int(obj.get("key") or 0)
-        _accuracy = str(obj.get("accuracy"))
-        return Passes(_total, _key, _accuracy)
+    @field_validator('*')
+    @classmethod
+    def parse_none(cls, v) -> int:
+        return v if v is not None else 0
 
 
-@dataclass_json
-@dataclass
-class Penalty:
-    won: int
-    commited: int
+class Tackles(BaseModel):
+    total: Optional[int]
+    blocks: Optional[int]
+    interceptions: Optional[int]
+
+    @field_validator('*')
+    @classmethod
+    def parse_none(cls, v) -> int:
+        return v if v is not None else 0
+
+
+class Duels(BaseModel):
+    total: Optional[int]
+    won: Optional[int]
+
+    @field_validator('*')
+    @classmethod
+    def parse_none(cls, v) -> int:
+        return v if v is not None else 0
+
+
+class Dribbles(BaseModel):
+    attempts: Optional[int]
+    success: Optional[int]
+    past: Optional[int]
+
+    @field_validator('*')
+    @classmethod
+    def parse_none(cls, v) -> int:
+        return v if v is not None else 0
+
+
+class Fouls(BaseModel):
+    drawn: Optional[int]
+    committed: Optional[int]
+
+    @field_validator('*')
+    @classmethod
+    def parse_none(cls, v) -> int:
+        return v if v is not None else 0
+
+
+class Cards(BaseModel):
+    yellow: int
+    red: int
+
+    @field_validator('*')
+    @classmethod
+    def parse_none(cls, v) -> int:
+        return v if v is not None else 0
+
+
+class Penalty(BaseModel):
+    won: Any
+    commited: Any
     scored: int
     missed: int
-    saved: int
+    saved: Optional[int]
 
-    @staticmethod
-    def from_dict(obj: Any) -> 'Penalty':
-        _won = int(obj.get("won") or 0)
-        _commited = int(obj.get("commited") or 0)
-        _scored = int(obj.get("scored") or 0)
-        _missed = int(obj.get("missed") or 0)
-        _saved = int(obj.get("saved") or 0)
-        return Penalty(_won, _commited, _scored, _missed, _saved)
+    @field_validator('*')
+    @classmethod
+    def parse_none(cls, v) -> int:
+        return v if v is not None else 0
 
 
-@dataclass_json
-@dataclass
-class Player:
-    id: int
-    name: str
-    photo: str
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Player':
-        _id = obj.get("id")
-        _name = str(obj.get("name"))
-        _photo = str(obj.get("photo"))
-        return Player(_id, _name, _photo)
-
-
-@dataclass_json
-@dataclass
-class Tackles:
-    total: int
-    blocks: int
-    interceptions: int
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Tackles':
-        _total = int(obj.get("total") or 0)
-        _blocks = int(obj.get("blocks") or 0)
-        _interceptions = int(obj.get("interceptions") or 0)
-        return Tackles(_total, _blocks, _interceptions)
-
-
-@dataclass_json
-@dataclass
-class Shots:
-    total: int
-    on: int
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Shots':
-        _total = int(obj.get("total") or 0)
-        _on = int(obj.get("on") or 0)
-        return Shots(_total, _on)
-
-
-@dataclass_json
-@dataclass
-class Statistic:
+class Statistic(BaseModel):
     games: Games
-    offsides: int
+    offsides: Optional[int]
     shots: Shots
     goals: Goals
     passes: Passes
@@ -187,82 +155,30 @@ class Statistic:
     cards: Cards
     penalty: Penalty
 
-    @staticmethod
-    def from_dict(obj: Any) -> 'Statistic':
-        _games = Games.from_dict(obj.get("games"))
-        _offsides = int(obj.get("offsides") or 0)
-        _shots = Shots.from_dict(obj.get("shots"))
-        _goals = Goals.from_dict(obj.get("goals"))
-        _passes = Passes.from_dict(obj.get("passes"))
-        _tackles = Tackles.from_dict(obj.get("tackles"))
-        _duels = Duels.from_dict(obj.get("duels"))
-        _dribbles = Dribbles.from_dict(obj.get("dribbles"))
-        _fouls = Fouls.from_dict(obj.get("fouls"))
-        _cards = Cards.from_dict(obj.get("cards"))
-        _penalty = Penalty.from_dict(obj.get("penalty"))
-        return Statistic(
-            _games,
-            _offsides,
-            _shots,
-            _goals,
-            _passes,
-            _tackles,
-            _duels,
-            _dribbles,
-            _fouls,
-            _cards,
-            _penalty,
-        )
+    @field_validator('offsides')
+    @classmethod
+    def parse_none(cls, v) -> int:
+        return v if v is not None else 0
 
 
-@dataclass_json
-@dataclass
-class Players:
-    player: Player
+class Player(BaseModel):
+    player: PlayerInfo
     statistics: List[Statistic]
 
-    @staticmethod
-    def from_dict(obj: Any) -> 'Players':
-        _player = Player.from_dict(obj.get("player"))
-        _statistics = [Statistic.from_dict(y) for y in obj.get("statistics")]
-        return Players(_player, _statistics)
 
-
-@dataclass_json
-@dataclass
-class Team:
-    id: int
-    name: str
-    logo: str
-    update: str
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Team':
-        _id = int(obj.get("id"))
-        _name = str(obj.get("name"))
-        _logo = str(obj.get("logo"))
-        _update = str(obj.get("update"))
-        return Team(_id, _name, _logo, _update)
-
-
-@dataclass
-class Info:
+class ResponseItem(BaseModel):
     team: Team
-    fixture: str
-    players: List[Players]
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Info':
-        _team = Team.from_dict(obj.get("team"))
-        _fixture = str(obj.get("fixture"))
-        _players = [Players.from_dict(y) for y in obj.get("players")]
-        return Info(_team, _fixture, _players)
+    players: List[Player]
 
 
-@dataclass_json
-@dataclass
-class StatisticsPlayer:
-    team: Team
-    fixture: str
-    player: Player
-    statistics: Statistic
+class PlayerItem(BaseModel):
+    get: str = Field(exclude=True)
+    parameters: Parameters
+    errors: List
+    results: int = Field(exclude=True)
+    paging: Paging = Field(exclude=True)
+    response: List[ResponseItem]
+
+
+class Players(BaseModel):
+    response: List[PlayerItem]

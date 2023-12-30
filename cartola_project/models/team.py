@@ -1,58 +1,61 @@
-from dataclasses import dataclass
-from typing import Any
+from typing import List, Optional
+
+from pydantic import BaseModel, Field, computed_field, field_validator
 
 
-@dataclass
-class Team:
-    id: int
+class Parameters(BaseModel):
+    id: str
+
+
+class Paging(BaseModel):
+    current: int
+    total: int
+
+
+class Team(BaseModel):
+    id: int = Field(..., serialization_alias='team_id')
     name: str
     code: str
     country: str
-    founded: int
-    national: bool
+    founded: int = Field(exclude=True)
+    national: bool = Field(exclude=True)
     logo: str
 
-    @staticmethod
-    def from_dict(obj: Any) -> 'Team':
-        _id = int(obj.get("id"))
-        _name = str(obj.get("name"))
-        _code = str(obj.get("code"))
-        _country = str(obj.get("country"))
-        _founded = int(obj.get("founded"))
-        _national = obj.get("national")
-        _logo = str(obj.get("logo"))
-        return Team(_id, _name, _code, _country, _founded, _national, _logo)
 
-
-@dataclass
-class Venue:
+class Venue(BaseModel):
     id: int
-    name: str
-    address: str
+    name: str = Field(exclude=True)
+    address: Optional[str] = Field(exclude=True)
     city: str
-    capacity: int
-    surface: str
-    image: str
+    capacity: int = Field(exclude=True)
+    surface: str = Field(exclude=True)
+    image: str = Field(exclude=True)
 
-    @staticmethod
-    def from_dict(obj: Any) -> 'Venue':
-        _id = int(obj.get("id") or 0)
-        _name = str(obj.get("name"))
-        _address = str(obj.get("address"))
-        _city = str(obj.get("city"))
-        _capacity = int(obj.get("capacity"))
-        _surface = str(obj.get("surface"))
-        _image = str(obj.get("image"))
-        return Venue(_id, _name, _address, _city, _capacity, _surface, _image)
+    @computed_field
+    def state(self) -> str:
+        return ''
+
+    @field_validator('city')
+    @classmethod
+    def _city(cls, c):
+        if len(c.split(',')) >= 1:
+            return c.split(',')[0].strip()
+        return ''
 
 
-@dataclass
-class Club:
+class ResponseItem(BaseModel):
     team: Team
     venue: Venue
 
-    @staticmethod
-    def from_dict(obj: Any) -> 'Club':
-        _team = Team.from_dict(obj.get("team"))
-        _venue = Venue.from_dict(obj.get("venue"))
-        return Club(_team, _venue)
+
+class TeamItem(BaseModel):
+    get: str
+    parameters: Parameters
+    errors: List
+    results: int = Field(exclude=True)
+    paging: Paging = Field(exclude=True)
+    response: List[ResponseItem]
+
+
+class Teams(BaseModel):
+    responses: List[TeamItem]

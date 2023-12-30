@@ -15,8 +15,8 @@ class Paging(BaseModel):
 
 
 class Periods(BaseModel):
-    first: int
-    second: int
+    first:  Optional[int]
+    second:  Optional[int]
 
 
 class Venue(BaseModel):
@@ -26,20 +26,20 @@ class Venue(BaseModel):
 
 
 class Status(BaseModel):
-    long: str
-    short: str
-    elapsed: int
+    long:  Optional[str]
+    short:  Optional[str] = Field(exclude=True)
+    elapsed:  Optional[int] = Field(exclude=True)
 
 
 class Fixture(BaseModel):
     id: int
-    referee: str = Field(exclude=True)
+    referee:  Optional[str] = Field(exclude=True)
     timezone: str = Field(exclude=True)
-    date: str
-    timestamp: int = Field(exclude=True)
+    date:  Optional[str]
+    timestamp:  Optional[int] = Field(exclude=True)
     periods: Periods = Field(exclude=True)
     venue: Venue = Field(exclude=True)
-    status: Status = Field(exclude=True)
+    status: Status
 
     @field_validator('date')
     @classmethod

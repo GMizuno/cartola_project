@@ -15,6 +15,7 @@ class MatchTransformer(Transformer):
     def extract_field(response: dict) -> dict:
         return {
             'partida_id': response.get('fixture').get('id'),
+            'partida_status': response.get('fixture').get('status').get('long'),
             'date': response.get('fixture').get('date'),
             'reference_date': response.get('fixture').get('reference_date'),
             'rodada': response.get('league').get('rodada'),

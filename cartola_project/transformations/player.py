@@ -16,9 +16,11 @@ class PlayerTransformer(Transformer):
 
     @staticmethod
     def extract_team_field(response: dict) -> dict:
-        return {
-            'team_id': response.get('team').get('team_id'),
-        }
+        return response.get('team')
+
+    @staticmethod
+    def extract_match_id(response: dict) -> dict:
+        return response.get('match')
 
     @staticmethod
     def extract_player_field(response: dict) -> list[dict]:
@@ -28,11 +30,10 @@ class PlayerTransformer(Transformer):
     def extract_field(self, response: dict) -> list[dict]:
         players = self.extract_player_field(response)
         team = self.extract_team_field(response)
-        return [team | player for player in players]
+        match = self.extract_match_id(response)
+        return [match | team | player for player in players]
 
     def transformation(self):
-        responses = list(
-            chain.from_iterable([response.get('response') for response in self.extract_model()])
-        )
-        data = chain.from_iterable([self.extract_field(response) for response in responses])
-        return pd.DataFrame(data)
+        model = self.extract_model()
+        responses = list(chain.from_iterable([[campo | {'match': i.get('parameters')} for campo in i.get('response')] for i in model]))
+        return pd.DataFrame(list(chain.from_iterable([self.extract_field(i) for i in responses])))

@@ -258,3 +258,4 @@ poetry.toml
 *.json
 /cartola_project/VERSION.txt
 *.parquet
+main.py

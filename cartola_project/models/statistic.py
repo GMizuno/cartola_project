@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, computed_field
 
 
 class Parameters(BaseModel):
-    fixture: str
+    fixture: str = Field(..., serialization_alias='match_id')
 
 
 class Paging(BaseModel):

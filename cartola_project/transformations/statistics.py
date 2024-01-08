@@ -15,9 +15,11 @@ class StatisticsTransformer(Transformer):
 
     @staticmethod
     def extract_team_field(response: dict) -> dict:
-        return {
-            'teams_id': response.get('team').get('team_id'),
-        }
+        return response.get('team')
+
+    @staticmethod
+    def extract_match_id(response: dict) -> dict:
+        return response.get('match')
 
     @staticmethod
     def extract_stats_field(response: dict) -> dict:
@@ -26,11 +28,10 @@ class StatisticsTransformer(Transformer):
     def extract_field(self, response: dict) -> dict:
         stats = self.extract_stats_field(response)
         team = self.extract_team_field(response)
-        return team | stats
+        match = self.extract_match_id(response)
+        return match | team | stats
 
     def transformation(self):
-        responses = list(
-            chain.from_iterable([response.get('response') for response in self.extract_model()])
-        )
-
-        return pd.DataFrame([self.extract_field(response) for response in responses])
+        model = self.extract_model()
+        responses = list(chain.from_iterable([[campo | {'match': i.get('parameters')} for campo in i.get('response')] for i in model]))
+        return pd.DataFrame([self.extract_field(i) for i in responses])

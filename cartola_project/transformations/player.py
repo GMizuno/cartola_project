@@ -17,7 +17,7 @@ class PlayerTransformer(Transformer):
     @staticmethod
     def extract_team_field(response: dict) -> dict:
         return {
-            'teams_id': response.get('team').get('teams_id'),
+            'team_id': response.get('team').get('team_id'),
         }
 
     @staticmethod

@@ -13,7 +13,7 @@ class Paging(BaseModel):
 
 
 class Team(BaseModel):
-    id: int = Field(serialization_alias='teams_id')
+    id: int = Field(serialization_alias='team_id')
     name: str = Field(exclude=True)
     logo: str = Field(exclude=True)
     update: str = Field(exclude=True)

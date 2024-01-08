@@ -24,6 +24,6 @@ data_teams = teams.get_data(team_id=['126'])
 
 
 data_partidas_clean = MatchTransformer(data_partidas).transformation()
-data_stats_clean = PlayerTransformer(data_players).transformation()
-data_players_clean = StatisticsTransformer(data_stats).transformation()
+data_players_clean = PlayerTransformer(data_players).transformation()
+data_stats_clean = StatisticsTransformer(data_stats).transformation()
 data_teams_clean = TeamTransformer(data_teams).transformation()

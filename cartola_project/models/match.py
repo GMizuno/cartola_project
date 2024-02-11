@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from dateutil import parser
@@ -49,8 +50,8 @@ class Fixture(BaseModel):
 
     @computed_field(alias='reference_date')
     def _reference_date(self) -> str:
-        time = parser.parse(self.date)
-        return time.strftime("%d-%m-%Y")
+        date = datetime.strptime(self.date, "%d-%m-%Y %H:%M")
+        return date.strftime("%d-%m-%Y")
 
 
 class League(BaseModel):

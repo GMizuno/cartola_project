@@ -15,7 +15,7 @@ class Paging(BaseModel):
 class Team(BaseModel):
     id: int = Field(..., serialization_alias='team_id')
     name: str
-    code: str
+    code: Optional[str]
     country: str
     founded: int = Field(exclude=True)
     national: bool = Field(exclude=True)

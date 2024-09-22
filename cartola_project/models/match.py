@@ -59,7 +59,7 @@ class League(BaseModel):
     name: str
     country: str = Field(exclude=True)
     logo: str = Field(exclude=True)
-    flag: str = Field(exclude=True)
+    flag: Optional[str] = Field(exclude=True)
     season: int
     round: str = Field(serialization_alias='rodada')
 

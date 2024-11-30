@@ -1,4 +1,8 @@
-from cartola_project.storage.storage import GCSStorage, LocalStorage
+from cartola_project.storage.storage import (
+    GCSStorage,
+    LocalStorage,
+    AzureStorage,
+)
 
 
 class StorageFactory:
@@ -21,3 +25,4 @@ class StorageFactory:
 factory = StorageFactory()
 factory.register_format('GCP', GCSStorage)
 factory.register_format('Local', LocalStorage)
+factory.register_format('Azure', AzureStorage)

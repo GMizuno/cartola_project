@@ -6,9 +6,13 @@ from pathlib import Path
 import pandas as pd
 from google.cloud import storage
 from google.oauth2 import service_account
+from azure.identity import DefaultAzureCredential
+from azure.storage.filedatalake import DataLakeServiceClient
+from azure.storage.filedatalake._download import StorageStreamDownloader
 
 GoogleCredentials = str | dict | service_account.Credentials
-File = dict | list[dict] | pd.DataFrame
+AzureCredentials = DefaultAzureCredential
+File = dict | list[dict] | pd.DataFrame | StorageStreamDownloader
 
 
 class Storage(ABC):
@@ -129,7 +133,7 @@ class LocalStorage(Storage):
         else:
             raise ValueError(f"Unsupported file type: {file_path.suffix}")
 
-    def download(self, file_path: str = '.'):
+    def download(self, file_path: str = '.') -> str | pd.DataFrame:
         file_path = Path(file_path)
 
         if file_path.suffix == '.parquet':
@@ -144,3 +148,51 @@ class LocalStorage(Storage):
     def list_files(self, file_path):
         path = Path(file_path)
         return [item for item in path.iterdir() if item.is_file()]
+
+
+class AzureStorage(Storage):
+    def __init__(self, storage_account_name: str, container: str) -> None:
+        self.storage_account_name = storage_account_name
+        self.file_system_name = container
+
+    @property
+    def get_credentials(self):
+        return DefaultAzureCredential()
+
+    def client(self):
+        return DataLakeServiceClient(
+            account_url=f"https://{self.storage_account_name}.dfs.core.windows.net",
+            credential=self.get_credentials,
+        ).get_file_system_client(self.file_system_name)
+
+    def _upload_file_data(self, file_path: str, file: File) -> str | bytes:
+        suffix = Path(file_path).suffix
+        if suffix == ".json":
+            return json.dumps(file)
+        elif suffix == ".parquet":
+            return file.to_parquet()
+        else:
+            raise ValueError(f"Unsupported file type: {suffix}")
+
+    def _download_file_data(self, file_path: str, file: StorageStreamDownloader) -> str | pd.DataFrame:
+        suffix = Path(file_path).suffix
+        if suffix == ".json":
+            return file.readall().decode("utf-8")
+        elif suffix == ".parquet":
+            return pd.read_parquet(BytesIO(file.readall()), engine="pyarrow")
+        else:
+            raise ValueError(f"Unsupported file type: {suffix}")
+
+    def download(self, file_path: str):
+        file_client = self.client().get_file_client(file_path)
+        downloaded_file = file_client.download_file()
+        return self._download_file_data(file_path, downloaded_file)
+
+    def upload(self, data, file_path: str, overwrite: bool=True):
+        file_client = self.client().get_file_client(file_path)
+        data = self._upload_file_data(file_path, data)
+        file_client.upload_data(data, overwrite=overwrite)
+
+    def list_files(self, path=None, recursive=False):
+        paths = self.client().get_paths(path=None, recursive=False)
+        return [path for path in paths if not path.is_directory]
